@@ -1,303 +1,369 @@
 # PRD — CommissionTrack
-Sistema de Gestão de Comissões Artísticas
+
+Sistema de Gerenciamento de Comissões Artísticas
+
+## 1. Visão do Produto
+
+O **CommissionTrack** é uma aplicação full-stack destinada ao gerenciamento de comissões artísticas, permitindo que artistas organizem pedidos de clientes, acompanhem status de produção, valores, prazos e histórico de entregas.
+
+O sistema será composto por:
+
+* Backend: NestJS + Prisma ORM + PostgreSQL
+* Frontend: (React | Angular | Vue)
+* Autenticação: JWT com Roles
+* Documentação: Swagger
+* Testes: Jest (TDD assistido por IA)
+* Deploy: Cloud (Render / Vercel)
+* Estrutura: Monorepo
 
 ---
 
-# 1. Visão do Produto
+# 2. Problema
 
-O **CommissionTrack** é uma aplicação web full-cycle destinada a artistas independentes que realizam trabalhos sob encomenda (comissões). O sistema permite organizar clientes, acompanhar pedidos artísticos e controlar o progresso das entregas por meio de uma API segura e uma interface web integrada.
+Artistas freelancers normalmente controlam comissões manualmente via:
 
-O objetivo principal é centralizar o fluxo de trabalho de comissões artísticas em uma plataforma estruturada, permitindo maior controle sobre prazos, status e relacionamento com clientes.
+* mensagens privadas
+* planilhas
+* anotações dispersas
 
-A aplicação será desenvolvida utilizando arquitetura moderna full-cycle com:
+Isso gera:
 
-- Backend: NestJS
-- ORM: Prisma
-- Banco relacional: PostgreSQL
-- Frontend: React / Angular / Vue
-- Autenticação: JWT
-- Documentação: Swagger
-- Testes: Jest
-- CI: GitHub Actions
+* perda de prazos
+* confusão de pagamentos
+* retrabalho
+* dificuldade de rastrear histórico
 
 ---
 
-# 2. Objetivos do Sistema
+# 3. Objetivo do Sistema
 
 Permitir que artistas:
 
-- cadastrem clientes
-- registrem comissões
-- acompanhem status de produção
-- mantenham histórico de trabalhos
-- organizem fluxo de entrega
-
-Permitir que o sistema:
-
-- mantenha autenticação segura
-- proteja dados por usuário
-- valide entradas da API
-- padronize respostas
-- forneça documentação Swagger
+* registrem clientes
+* registrem comissões
+* acompanhem status
+* controlem valores e prazos
+* organizem entregas
 
 ---
 
-# 3. Personas
+# 4. Perfis de Usuário
 
-## Artista Independente
+## Artista (ADMIN)
 
-Profissional que realiza comissões artísticas sob demanda e precisa organizar pedidos de clientes, acompanhar status e controlar entregas.
+Pode:
 
-Necessidades principais:
+* gerenciar clientes
+* criar comissões
+* atualizar status
+* registrar pagamentos
+* visualizar histórico completo
 
-- organizar pedidos
-- acompanhar progresso
-- evitar perda de informações
-- manter histórico de clientes
+## Cliente (USER)
 
----
+Pode:
 
-# 4. Escopo do Produto
-
-O sistema permitirá:
-
-### Autenticação
-
-- cadastro de usuário
-- login com JWT
-- proteção de rotas autenticadas
-
-### Gestão de Clientes
-
-- cadastrar clientes
-- listar clientes
-- atualizar clientes
-- remover clientes
-
-### Gestão de Comissões
-
-- registrar nova comissão
-- atualizar status da comissão
-- listar comissões
-- visualizar histórico de comissões
+* visualizar próprias comissões
+* acompanhar status
+* visualizar entregas
 
 ---
 
-# 5. Entidades do Sistema
+# 5. Entidades Principais
 
-## User (Artista)
+Relacionamento obrigatório:
 
-Representa o usuário autenticado do sistema.
+```
+Cliente 1:N Comissões
+```
 
-Campos:
+Estrutura inicial:
 
-- id
-- name
-- email
-- password
-- role
-- createdAt
-
-Relacionamentos:
-
-User 1:N Client  
-User 1:N Commission
+Cliente
+Comissão
+Entrega (opcional na fase 1, recomendada)
 
 ---
 
-## Client
+# 6. Regras de Negócio
 
-Representa o cliente do artista.
+RN01
+Um cliente pode possuir várias comissões.
 
-Campos:
+RN02
+Cada comissão pertence a apenas um cliente.
 
-- id
-- name
-- contactInfo
-- createdAt
-- userId
+RN03
+Uma comissão possui status obrigatório:
 
-Relacionamentos:
+```
+PENDENTE
+EM_ANDAMENTO
+AGUARDANDO_PAGAMENTO
+CONCLUIDA
+CANCELADA
+```
 
-Client N:1 User  
-Client 1:N Commission
+RN04
+Somente artistas podem criar comissões.
 
----
+RN05
+Clientes só visualizam suas próprias comissões.
 
-## Commission
+RN06
+Valores devem ser positivos.
 
-Representa um pedido artístico.
-
-Campos:
-
-- id
-- title
-- description
-- status
-- price
-- deadline
-- createdAt
-- clientId
-- userId
-
-Relacionamentos:
-
-Commission N:1 Client  
-Commission N:1 User
+RN07
+Datas de entrega devem ser futuras no momento da criação.
 
 ---
 
-# 6. Status da Comissão
+# 7. User Stories (Mapeadas para os IDs da Disciplina)
 
-A entidade Commission utilizará controle de status por enum:
-- pending
-- approved
-- sketch
-- lineart
-- coloring
-- completed
-- delivered
-- cancelled
+## US01 — Estruturação do repositório (ID2)
 
----
+Como desenvolvedor
+Quero organizar o projeto em monorepo
+Para manter frontend e backend versionados juntos
 
-# 7. Regras de Negócio
+Critérios:
 
-RN01  
-Cada artista só pode visualizar seus próprios clientes.
-
-RN02  
-Cada artista só pode visualizar suas próprias comissões.
-
-RN03  
-Uma comissão deve obrigatoriamente pertencer a um cliente.
-
-RN04  
-Uma comissão deve possuir status válido definido pelo enum.
-
-RN05  
-Usuários devem estar autenticados para acessar rotas protegidas.
-
-RN06  
-Entradas da API devem ser validadas utilizando DTOs e ValidationPipe com whitelist ativa.
-
-RN07  
-Respostas da API devem seguir padrão estruturado via Interceptors.
-
-RN08  
-Erros da aplicação devem ser tratados por ExceptionFilter global.
-
-RN09  
-Cada comissão deve possuir status inicial igual a:
-- pending
-
-RN10  
-Clientes pertencem exclusivamente ao artista que os criou.
+* pasta `/apps/frontend`
+* pasta `/apps/backend`
+* pasta `/docs`
+* README funcional
 
 ---
 
-# 8. Requisitos Funcionais
+## US02 — Escrita do PRD e SSD (ID1)
 
-RF01  
-Sistema deve permitir cadastro de usuário.
+Como arquiteto do sistema
+Quero documentar requisitos e arquitetura
+Para garantir rastreabilidade do projeto
 
-RF02  
-Sistema deve permitir autenticação via JWT.
+Critérios:
 
-RF03  
-Sistema deve permitir cadastro de clientes.
-
-RF04  
-Sistema deve permitir listagem de clientes.
-
-RF05  
-Sistema deve permitir atualização de clientes.
-
-RF06  
-Sistema deve permitir remoção de clientes.
-
-RF07  
-Sistema deve permitir criação de comissões.
-
-RF08  
-Sistema deve permitir atualização de status de comissão.
-
-RF09  
-Sistema deve permitir listagem de comissões.
-
-RF10  
-Sistema deve permitir filtragem de comissões por usuário autenticado.
-
-RF11  
-Sistema deve expor documentação Swagger interativa.
-
-RF12  
-Sistema deve possuir testes automatizados cobrindo sucesso e erro.
+* PRD criado
+* SSD criado
+* diagrama ER Mermaid incluído
 
 ---
 
-# 9. Requisitos Não Funcionais
+## US03 — Criação do backlog rastreável (ID3)
 
-RNF01  
-Backend deve ser desenvolvido com NestJS utilizando arquitetura em camadas:
+Como desenvolvedor
+Quero mapear User Stories em Issues
+Para acompanhar progresso via GitHub Projects
 
-- Controllers
-- Services
-- Modules
+Critérios:
 
-RNF02  
-Banco relacional deve ser acessado via Prisma ORM.
-
-RNF03  
-Autenticação deve utilizar JWT.
-
-RNF04  
-Entradas devem ser protegidas com DTO + ValidationPipe whitelist.
-
-RNF05  
-Sistema deve possuir interceptors globais de resposta.
-
-RNF06  
-Sistema deve possuir exception filters globais.
-
-RNF07  
-Testes automatizados devem ser executados com Jest.
-
-RNF08  
-API deve possuir documentação Swagger.
-
-RNF09  
-Projeto deve utilizar monorepo (frontend + backend).
-
-RNF10  
-Pipeline CI deve validar testes antes do merge.
+* issues criadas
+* labels aplicadas
+* status organizados
 
 ---
 
-# 10. Fluxo Principal do Sistema
+## US04 — Organização via GitFlow (ID4)
 
-Fluxo esperado de uso:
-- Usuário cria conta
-→ realiza login
-→ cadastra cliente
-→ cria comissão
-→ atualiza status da comissão
-→ acompanha progresso
-→ finaliza entrega
+Como desenvolvedor
+Quero utilizar branches de feature
+Para manter histórico limpo e rastreável
+
+Critérios:
+
+* branch main protegida
+* branch develop criada
+* PR obrigatório antes de merge
 
 ---
 
-# 11. Critérios de Sucesso do Projeto
+# BACKEND
 
-O sistema será considerado completo quando:
+## US05 — Estrutura modular NestJS (ID5)
 
-- possuir autenticação JWT funcional
-- implementar CRUD relacional com Prisma
-- utilizar DTO + ValidationPipe whitelist
-- possuir interceptors globais
-- possuir exception filters globais
-- possuir testes automatizados Jest
-- expor documentação Swagger
-- possuir estrutura monorepo
-- utilizar GitFlow com Pull Requests
-- executar pipeline CI com sucesso
+Como desenvolvedor
+Quero separar Controllers, Services e Modules
+Para manter arquitetura limpa
+
+Critérios:
+
+```
+cliente.module
+cliente.service
+cliente.controller
+```
+
+```
+commission.module
+commission.service
+commission.controller
+```
+
+---
+
+## US06 — DTO + ValidationPipe (ID6)
+
+Como desenvolvedor
+Quero validar entradas da API
+Para evitar dados inválidos
+
+Critérios:
+
+* CreateClienteDTO
+* UpdateClienteDTO
+* CreateCommissionDTO
+* ValidationPipe whitelist ativo
+
+---
+
+## US07 — CRUD relacional Prisma (ID7)
+
+Como desenvolvedor
+Quero implementar CRUD Cliente → Comissão
+Para persistir dados corretamente
+
+Critérios:
+
+Endpoints:
+
+```
+POST /clientes
+GET /clientes
+GET /clientes/:id
+PATCH /clientes/:id
+DELETE /clientes/:id
+```
+
+```
+POST /commissions
+GET /commissions
+PATCH /commissions/:id
+DELETE /commissions/:id
+```
+
+Relacionamento funcionando via Prisma
+
+---
+
+## US08 — Autenticação JWT + Roles (ID8)
+
+Como desenvolvedor
+Quero proteger endpoints com autenticação
+Para controlar acesso por perfil
+
+Critérios:
+
+* login endpoint
+* JWT válido
+* Role guard ativo
+* cliente acessa apenas próprios dados
+
+---
+
+## US09 — Interceptors + Exception Filters (ID9)
+
+Como desenvolvedor
+Quero padronizar respostas da API
+Para melhorar consistência
+
+Critérios:
+
+Interceptor:
+
+```
+SuccessResponseInterceptor
+```
+
+Exception Filter:
+
+```
+HttpExceptionFilter global
+```
+
+---
+
+# TDD
+
+## US10 — Testes antes da implementação (ID10)
+
+Como desenvolvedor
+Quero gerar testes antes do código
+Para validar comportamento esperado
+
+Critérios:
+
+* testes criados antes da lógica
+* Jest configurado
+* testes falhando inicialmente
+
+---
+
+## US11 — Execução automática dos testes (ID11)
+
+Como desenvolvedor
+Quero rodar testes automaticamente
+Para garantir estabilidade
+
+Critérios:
+
+```
+npm run test
+```
+
+retorna sucesso
+
+Cobertura:
+
+* sucesso
+* erro
+* validação
+
+---
+
+# DOCUMENTAÇÃO API
+
+## US12 — Swagger ativo (ID12)
+
+Como desenvolvedor
+Quero documentar endpoints automaticamente
+Para facilitar integração frontend
+
+Critérios:
+
+```
+/api/docs
+```
+
+disponível
+
+Endpoints documentados:
+
+* auth
+* clientes
+* commissions
+
+---
+
+# 8. Métricas de Sucesso
+
+Sistema considerado funcional quando:
+
+* CRUD completo funcionando
+* autenticação ativa
+* testes passando
+* swagger documentado
+* deploy público disponível
+* frontend consumindo API
+
+---
+
+# 9. Escopo da Primeira Entrega
+
+Inclui:
+
+* PRD
+* SSD
+* Diagrama ER
+* Monorepo estruturado
+* backlog criado
+* GitFlow iniciado
