@@ -296,6 +296,104 @@ Response:
 
 ---
 
+## GET /users
+
+Lista usuários (clientes) cadastrados no sistema. Necessário para que o artista encontre o `clientId` ao criar uma nova comissão.
+
+Permissão:
+
+```
+ARTIST
+```
+
+Response:
+
+```json
+[
+  {
+    "id": "uuid",
+    "name": "string",
+    "email": "string",
+    "role": "CLIENT"
+  }
+]
+```
+
+---
+
+## GET /users/:id
+
+Retorna os detalhes de um usuário específico.
+
+Permissão:
+
+```
+ARTIST OR OWNER
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "email": "string",
+  "role": "CLIENT",
+  "createdAt": "datetime"
+}
+```
+
+---
+
+## PATCH /users/:id
+
+Atualiza dados do perfil do usuário.
+
+Permissão:
+
+```
+ARTIST OR OWNER
+```
+
+Request:
+
+```json
+{
+  "name": "Novo nome"
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "Novo nome"
+}
+```
+
+---
+
+## DELETE /users/:id
+
+Remove um usuário (cliente) do sistema.
+
+Permissão:
+
+```
+ARTIST
+```
+
+Response:
+
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+
+---
+
 # 3. Commission Module
 
 ## POST /commissions
