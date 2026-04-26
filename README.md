@@ -277,7 +277,7 @@ Legenda:
 [x] Diagrama ER Mermaid
 [x] Monorepo estruturado
 [~] GitHub Projects backlog
-[ ] GitFlow configurado
+[x] GitFlow configurado
 ```
 
 ## RA2 — Backend
