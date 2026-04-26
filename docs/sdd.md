@@ -148,6 +148,7 @@ Constraints:
 email UNIQUE
 price > 0
 deadline > createdAt (se informada)
+
 ```
 
 Regras adicionais:

@@ -116,6 +116,7 @@ Valores devem ser positivos.
 RN07
 Datas de entrega são opcionais na criação, mas se informadas, devem ser futuras.
 
+
 ---
 
 # 7. User Stories (Mapeadas para os IDs da Disciplina)
