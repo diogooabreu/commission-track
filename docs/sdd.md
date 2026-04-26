@@ -10,9 +10,9 @@ erDiagram
     USER {
         uuid id PK
         string name
-        string email
+        string email UK "UNIQUE"
         string password
-        string role
+        string role "ARTIST ou CLIENT"
         datetime createdAt
         datetime updatedAt
     }
@@ -21,9 +21,9 @@ erDiagram
         uuid id PK
         string title
         string description
-        decimal price
+        decimal price "deve ser > 0"
         string status
-        datetime deadline
+        datetime deadline "nullable (opcional)"
         uuid clientId FK
         uuid artistId FK
         datetime createdAt
@@ -33,14 +33,14 @@ erDiagram
     DELIVERY {
         uuid id PK
         string fileUrl
-        string notes
+        string notes "nullable"
         uuid commissionId FK
         datetime createdAt
     }
 
-    USER ||--o{ COMMISSION : creates
-    USER ||--o{ COMMISSION : owns
-    COMMISSION ||--o{ DELIVERY : contains
+    USER ||--o{ COMMISSION : "artistId (creates)"
+    USER ||--o{ COMMISSION : "clientId (owns)"
+    COMMISSION ||--o{ DELIVERY : "contains"
 ```
 
 ---
