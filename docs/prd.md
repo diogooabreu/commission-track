@@ -114,7 +114,7 @@ RN06
 Valores devem ser positivos.
 
 RN07
-Datas de entrega devem ser futuras no momento da criação.
+Datas de entrega são opcionais na criação, mas se informadas, devem ser futuras.
 
 ---
 

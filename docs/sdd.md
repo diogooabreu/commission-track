@@ -92,7 +92,7 @@ Campos:
 | description | string   | sim         | Detalhes            |
 | price       | decimal  | sim         | Valor               |
 | status      | enum     | sim         | Status atual        |
-| deadline    | datetime | sim         | Prazo entrega       |
+| deadline    | datetime | não         | Prazo entrega       |
 | clientId    | UUID     | sim         | Cliente dono        |
 | artistId    | UUID     | sim         | Artista responsável |
 | createdAt   | datetime | sim         | Criação             |
@@ -147,7 +147,7 @@ Constraints:
 ```
 email UNIQUE
 price > 0
-deadline > createdAt
+deadline > createdAt (se informada)
 ```
 
 Regras adicionais:
