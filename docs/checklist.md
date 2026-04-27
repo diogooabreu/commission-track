@@ -44,9 +44,9 @@ Organizar frontend e backend dentro de um único repositório.
 
 Checklist:
 
-* [ ] Pasta `/apps/backend`
-* [ ] Pasta `/apps/frontend`
-* [ ] Pasta `/docs`
+* [x] Pasta `/apps/backend`
+* [x] Pasta `/apps/frontend`
+* [x] Pasta `/docs`
 * [x] README.md funcional na raiz
 
 Evidência:
@@ -65,10 +65,10 @@ Mapear PRD em User Stories rastreáveis.
 
 Checklist:
 
-* [ ] Issues criadas a partir das User Stories
+* [x] Issues criadas a partir das User Stories
 * [ ] Labels aplicadas
-* [ ] Kanban configurado
-* [ ] Status atualizado durante desenvolvimento
+* [x] Kanban configurado
+* [x] Status atualizado durante desenvolvimento
 
 Evidência:
 

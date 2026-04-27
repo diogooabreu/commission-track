@@ -276,7 +276,7 @@ Legenda:
 [x] SSD criado
 [x] Diagrama ER Mermaid
 [x] Monorepo estruturado
-[~] GitHub Projects backlog
+[x] GitHub Projects backlog
 [x] GitFlow configurado
 ```
 
