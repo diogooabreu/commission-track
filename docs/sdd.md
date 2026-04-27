@@ -171,7 +171,7 @@ Permite autenticação simples com JWT
 
 Role-based access:
 
-Compatível com Guards do NestJS
+Compatível com Guards do NestJS(versão 11.0.21)
 
 Delivery separado:
 
