@@ -22,16 +22,16 @@ Estruturar documentação de requisitos e design arquitetural utilizando IA.
 
 Checklist:
 
-* [ ] PRD criado em `/docs/prd.md`
-* [ ] SSD criado em `/docs/sdd.md`
-* [ ] Diagrama ER Mermaid incluído
-* [ ] Contrato da API documentado
+* [x] PRD criado em `/docs/prd.md`
+* [x] SSD criado em `/docs/sdd.md`
+* [x] Diagrama ER Mermaid incluído
+* [x] Contrato da API documentado
 
 Evidência:
 
 ```text
-Link:
-```
+Link: https://github.com/diogooabreu/commission-track/blob/develop/docs/prd.md 
+      https://github.com/diogooabreu/commission-track/blob/develop/docs/sdd.md
 
 ---
 
@@ -43,16 +43,15 @@ Organizar frontend e backend dentro de um único repositório.
 
 Checklist:
 
-* [ ] Pasta `/apps/backend`
-* [ ] Pasta `/apps/frontend`
-* [ ] Pasta `/docs`
-* [ ] README.md funcional na raiz
+* [x] Pasta `/apps/backend`
+* [x] Pasta `/apps/frontend`
+* [x] Pasta `/docs`
+* [x] README.md funcional na raiz
 
 Evidência:
 
 ```text
-Link:
-```
+Link: https://github.com/diogooabreu/commission-track/blob/develop/README.md
 
 ---
 
@@ -64,10 +63,10 @@ Mapear PRD em User Stories rastreáveis.
 
 Checklist:
 
-* [ ] Issues criadas a partir das User Stories
+* [x] Issues criadas a partir das User Stories
 * [ ] Labels aplicadas
-* [ ] Kanban configurado
-* [ ] Status atualizado durante desenvolvimento
+* [x] Kanban configurado
+* [x] Status atualizado durante desenvolvimento
 
 Evidência:
 
@@ -85,11 +84,11 @@ Demonstrar domínio de versionamento profissional.
 
 Checklist:
 
-* [ ] Branch `main` protegida
-* [ ] Branch `develop` criada
-* [ ] Branches `feature/*`
-* [ ] Pull Requests utilizados
-* [ ] Code review documentado (mesmo individual)
+* [x] Branch `main` protegida
+* [x] Branch `develop` criada
+* [x] Branches `feature/*`
+* [x] Pull Requests utilizados
+* [~] Code review documentado (mesmo individual)
 
 Evidência:
 

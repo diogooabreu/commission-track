@@ -10,9 +10,9 @@ erDiagram
     USER {
         uuid id PK
         string name
-        string email
+        string email UK "UNIQUE"
         string password
-        string role
+        string role "ARTIST ou CLIENT"
         datetime createdAt
         datetime updatedAt
     }
@@ -21,9 +21,9 @@ erDiagram
         uuid id PK
         string title
         string description
-        decimal price
+        decimal price "deve ser > 0"
         string status
-        datetime deadline
+        datetime deadline "nullable (opcional)"
         uuid clientId FK
         uuid artistId FK
         datetime createdAt
@@ -33,14 +33,14 @@ erDiagram
     DELIVERY {
         uuid id PK
         string fileUrl
-        string notes
+        string notes "nullable"
         uuid commissionId FK
         datetime createdAt
     }
 
-    USER ||--o{ COMMISSION : creates
-    USER ||--o{ COMMISSION : owns
-    COMMISSION ||--o{ DELIVERY : contains
+    USER ||--o{ COMMISSION : "artistId (creates)"
+    USER ||--o{ COMMISSION : "clientId (owns)"
+    COMMISSION ||--o{ DELIVERY : "contains"
 ```
 
 ---
@@ -92,7 +92,7 @@ Campos:
 | description | string   | sim         | Detalhes            |
 | price       | decimal  | sim         | Valor               |
 | status      | enum     | sim         | Status atual        |
-| deadline    | datetime | sim         | Prazo entrega       |
+| deadline    | datetime | não         | Prazo entrega       |
 | clientId    | UUID     | sim         | Cliente dono        |
 | artistId    | UUID     | sim         | Artista responsável |
 | createdAt   | datetime | sim         | Criação             |
@@ -147,7 +147,8 @@ Constraints:
 ```
 email UNIQUE
 price > 0
-deadline > createdAt
+deadline > createdAt (se informada)
+
 ```
 
 Regras adicionais:
@@ -170,7 +171,7 @@ Permite autenticação simples com JWT
 
 Role-based access:
 
-Compatível com Guards do NestJS
+Compatível com Guards do NestJS(versão 11.0.21)
 
 Delivery separado:
 
@@ -290,6 +291,104 @@ Response:
 "name": "string",
 "email": "string",
 "role": "CLIENT"
+}
+```
+
+---
+
+## GET /users
+
+Lista usuários (clientes) cadastrados no sistema. Necessário para que o artista encontre o `clientId` ao criar uma nova comissão.
+
+Permissão:
+
+```
+ARTIST
+```
+
+Response:
+
+```json
+[
+  {
+    "id": "uuid",
+    "name": "string",
+    "email": "string",
+    "role": "CLIENT"
+  }
+]
+```
+
+---
+
+## GET /users/:id
+
+Retorna os detalhes de um usuário específico.
+
+Permissão:
+
+```
+ARTIST OR OWNER
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "email": "string",
+  "role": "CLIENT",
+  "createdAt": "datetime"
+}
+```
+
+---
+
+## PATCH /users/:id
+
+Atualiza dados do perfil do usuário.
+
+Permissão:
+
+```
+ARTIST OR OWNER
+```
+
+Request:
+
+```json
+{
+  "name": "Novo nome"
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "name": "Novo nome"
+}
+```
+
+---
+
+## DELETE /users/:id
+
+Remove um usuário (cliente) do sistema.
+
+Permissão:
+
+```
+ARTIST
+```
+
+Response:
+
+```json
+{
+  "message": "User deleted successfully"
 }
 ```
 
