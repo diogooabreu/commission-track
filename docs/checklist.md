@@ -32,7 +32,6 @@ Evidência:
 ```text
 Link: https://github.com/diogooabreu/commission-track/blob/develop/docs/prd.md 
       https://github.com/diogooabreu/commission-track/blob/develop/docs/sdd.md
-```
 
 ---
 
@@ -53,7 +52,6 @@ Evidência:
 
 ```text
 Link: https://github.com/diogooabreu/commission-track/blob/develop/README.md
-```
 
 ---
 

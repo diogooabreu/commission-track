@@ -278,7 +278,6 @@ Legenda:
 [x] Monorepo estruturado
 [x] GitHub Projects backlog
 [x] GitFlow configurado
-```
 
 ## RA2 — Backend
 
