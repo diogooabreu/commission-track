@@ -12,6 +12,10 @@ Projeto acadêmico da disciplina **Tópicos Especiais em Engenharia de Software 
 
 ---
 
+# Link do protótipo do projeto
+
+https://stitch.withgoogle.com/preview/6504389650668497406?node-id=3e88260414944d5991b4c1cfa96b3e6d
+
 # Link em Produção
 
 Backend:
