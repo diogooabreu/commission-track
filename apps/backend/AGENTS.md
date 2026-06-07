@@ -57,4 +57,5 @@ npm run lint               # ESLint + Prettier
 - Criada branch `feature/backend-crud-tdd`
 - Implementados IDs 4, 5, 6, 7, 9, 10, 11
 - Prisma v7 adaptado: trocado `prisma-client` → `prisma-client-js` por compatibilidade Jest
-- 5 commits atômicos, 40 testes unitários + 1 e2e passando
+- 6 commits atômicos, 40 testes unitários + 1 e2e passando
+- `dist/` removido do versionamento e adicionado ao `.gitignore`
