@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ARTIST
+  CLIENT
+}
+
+enum Status {
+  PENDING
+  IN_PROGRESS
+  WAITING_PAYMENT
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commissionsAsArtist Commission[] @relation("ArtistCommissions")
+  commissionsAsClient Commission[] @relation("ClientCommissions")
+}
+
+model Commission {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  price       Decimal   @db.Decimal(10, 2)
+  status      Status    @default(PENDING)
+  deadline    DateTime?
+  clientId    String
+  artistId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  client     User      @relation("ClientCommissions", fields: [clientId], references: [id])
+  artist     User      @relation("ArtistCommissions", fields: [artistId], references: [id])
+  deliveries Delivery[]
+}
+
+model Delivery {
+  id           String   @id @default(uuid())
+  fileUrl      String
+  notes        String?
+  commissionId String
+  createdAt    DateTime @default(now())
+
+  commission Commission @relation(fields: [commissionId], references: [id])
+}
