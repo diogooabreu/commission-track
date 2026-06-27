@@ -1,21 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ForbiddenException } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 describe('UsersController', () => {
   let controller: UsersController;
 
   const mockService = {
-    create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
   };
 
-  const mockGuard = { canActivate: jest.fn(() => true) };
+  const mockJwtGuard = { canActivate: jest.fn(() => true) };
+  const mockRolesGuard = { canActivate: jest.fn(() => true) };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,7 +25,9 @@ describe('UsersController', () => {
       providers: [{ provide: UsersService, useValue: mockService }],
     })
       .overrideGuard(JwtAuthGuard)
-      .useValue(mockGuard)
+      .useValue(mockJwtGuard)
+      .overrideGuard(RolesGuard)
+      .useValue(mockRolesGuard)
       .compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -36,7 +40,7 @@ describe('UsersController', () => {
   });
 
   describe('findAll', () => {
-    it('should return all users', async () => {
+    it('should call service.findAll', async () => {
       const expected = [{ id: 'uuid-1', name: 'John' }];
       mockService.findAll.mockResolvedValue(expected);
 
@@ -46,12 +50,39 @@ describe('UsersController', () => {
   });
 
   describe('findOne', () => {
-    it('should return a user by id', async () => {
+    it('should return a user for ARTIST', async () => {
+      const user = { id: 'artist-uuid', role: 'ARTIST' };
+      const req = { user };
       const expected = { id: 'uuid-1', name: 'John' };
       mockService.findOne.mockResolvedValue(expected);
 
-      const result = await controller.findOne('uuid-1');
+      const result = await controller.findOne(
+        req as unknown as Request,
+        'uuid-1',
+      );
       expect(result).toEqual(expected);
+    });
+
+    it('should return the user when CLIENT requests own id', async () => {
+      const user = { id: 'my-uuid', role: 'CLIENT' };
+      const req = { user };
+      const expected = { id: 'my-uuid', name: 'John' };
+      mockService.findOne.mockResolvedValue(expected);
+
+      const result = await controller.findOne(
+        req as unknown as Request,
+        'my-uuid',
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should throw ForbiddenException when CLIENT requests other user', () => {
+      const user = { id: 'my-uuid', role: 'CLIENT' };
+      const req = { user };
+
+      expect(() =>
+        controller.findOne(req as unknown as Request, 'other-uuid'),
+      ).toThrow(ForbiddenException);
     });
   });
 

@@ -13,6 +13,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CommissionsService } from './commissions.service';
 import { CreateCommissionDto } from './dto/create-commission.dto';
 import { UpdateCommissionDto } from './dto/update-commission.dto';
+import { UpdateCommissionStatusDto } from './dto/update-commission-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -56,6 +57,18 @@ export class CommissionsController {
   ) {
     const user = req.user as { id: string };
     return this.commissionsService.update(id, dto, user.id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ARTIST)
+  @Patch(':id/status')
+  updateStatus(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() dto: UpdateCommissionStatusDto,
+  ) {
+    const user = req.user as { id: string };
+    return this.commissionsService.updateStatus(id, dto.status, user.id);
   }
 
   @UseGuards(RolesGuard)

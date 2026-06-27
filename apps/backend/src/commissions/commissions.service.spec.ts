@@ -172,6 +172,50 @@ describe('CommissionsService', () => {
     });
   });
 
+  describe('updateStatus', () => {
+    const userId = 'artist-uuid';
+
+    it('should update status when artist is the owner', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        artistId: 'artist-uuid',
+      });
+      const updated = { id: 'uuid-1', status: 'IN_PROGRESS' };
+      mockPrisma.commission.update.mockResolvedValue(updated);
+
+      const result = await service.updateStatus(
+        'uuid-1',
+        'IN_PROGRESS',
+        userId,
+      );
+
+      expect(mockPrisma.commission.update).toHaveBeenCalledWith({
+        where: { id: 'uuid-1' },
+        data: { status: 'IN_PROGRESS' },
+      });
+      expect(result).toEqual(updated);
+    });
+
+    it('should throw ForbiddenException when artist is not the owner', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        artistId: 'other-artist',
+      });
+
+      await expect(
+        service.updateStatus('uuid-1', 'IN_PROGRESS', userId),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw NotFoundException if commission does not exist', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateStatus('nonexistent', 'IN_PROGRESS', userId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
   describe('remove', () => {
     const userId = 'artist-uuid';
 
