@@ -88,12 +88,12 @@ Checklist:
 * [x] Branch `develop` criada
 * [x] Branches `feature/*`
 * [x] Pull Requests utilizados
-* [~] Code review documentado (mesmo individual)
+* [x] Code review documentado (mesmo individual)
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/tree/feature/backend-crud-tdd
 ```
 
 ---
@@ -108,15 +108,15 @@ Separação clara entre camadas.
 
 Checklist:
 
-* [ ] Module criado
-* [ ] Controller criado
-* [ ] Service criado
-* [ ] Organização por domínio (`auth`, `users`, `commissions`, `deliveries`)
+* [x] Module criado
+* [x] Controller criado
+* [x] Service criado
+* [x] Organização por domínio (`auth`, `users`, `commissions`, `deliveries`)
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/tree/feature/backend-crud-tdd/apps/backend/src
 ```
 
 ---
@@ -129,17 +129,17 @@ Blindagem de entrada da API.
 
 Checklist:
 
-* [ ] CreateUserDTO
-* [ ] LoginDTO
-* [ ] CreateCommissionDTO
-* [ ] UpdateCommissionDTO
-* [ ] ValidationPipe global ativo
-* [ ] whitelist: true configurado
+* [x] CreateUserDTO
+* [ ] LoginDTO (pendente — aguarda ID8)
+* [x] CreateCommissionDTO
+* [x] UpdateCommissionDTO
+* [x] ValidationPipe global ativo
+* [x] whitelist: true configurado
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/blob/feature/backend-crud-tdd/apps/backend/src/main.ts
 ```
 
 ---
@@ -152,16 +152,16 @@ Persistência relacional funcional.
 
 Checklist:
 
-* [ ] CRUD User
-* [ ] CRUD Commission
-* [ ] CRUD Delivery
-* [ ] Relacionamento 1:N funcionando
-* [ ] Migrations executadas
+* [x] CRUD User
+* [x] CRUD Commission
+* [x] CRUD Delivery
+* [x] Relacionamento 1:N funcionando
+* [x] Migrations executadas
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/blob/feature/backend-crud-tdd/apps/backend/prisma/schema.prisma
 ```
 
 ---
@@ -196,15 +196,15 @@ Padronizar tráfego da API.
 
 Checklist:
 
-* [ ] SuccessResponseInterceptor criado
-* [ ] HttpExceptionFilter global criado
-* [ ] Estrutura padrão de resposta aplicada
-* [ ] Estrutura padrão de erro aplicada
+* [x] SuccessResponseInterceptor criado
+* [x] HttpExceptionFilter global criado
+* [x] Estrutura padrão de resposta aplicada
+* [x] Estrutura padrão de erro aplicada
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/tree/feature/backend-crud-tdd/apps/backend/src/common
 ```
 
 ---
@@ -219,15 +219,15 @@ Aplicar fluxo TDD assistido por IA.
 
 Checklist:
 
-* [ ] Testes criados antes da lógica
-* [ ] Testes Services
-* [ ] Testes Controllers
-* [ ] Testes Auth
+* [x] Testes criados antes da lógica
+* [x] Testes Services
+* [x] Testes Controllers
+* [ ] Testes Auth (pendente — aguarda ID8)
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/tree/feature/backend-crud-tdd/apps/backend/src
 ```
 
 ---
@@ -240,15 +240,15 @@ Garantir estabilidade do sistema.
 
 Checklist:
 
-* [ ] `npm run test` executa corretamente
-* [ ] Cobertura de sucesso
-* [ ] Cobertura de erro
+* [x] `npm run test` executa corretamente
+* [x] Cobertura de sucesso
+* [x] Cobertura de erro
 * [ ] Pipeline executa testes automaticamente (opcional nesta fase)
 
 Evidência:
 
 ```text
-Link:
+Link: https://github.com/diogooabreu/commission-track/tree/feature/backend-crud-tdd/apps/backend/src
 ```
 
 ---
