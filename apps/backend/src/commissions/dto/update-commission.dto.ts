@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsNumber, Min, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class UpdateCommissionDto {
   @IsString({ message: 'O título deve ser um texto válido' })

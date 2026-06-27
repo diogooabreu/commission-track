@@ -5,7 +5,6 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('CommissionsService', () => {
   let service: CommissionsService;
-  let prisma: PrismaService;
 
   const mockPrisma = {
     commission: {
@@ -29,13 +28,18 @@ describe('CommissionsService', () => {
     }).compile();
 
     service = module.get<CommissionsService>(CommissionsService);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => jest.clearAllMocks());
 
   describe('create', () => {
-    const dto = { title: 'Portrait', description: 'Digital art', price: 150, clientId: 'client-uuid', artistId: 'artist-uuid' };
+    const dto = {
+      title: 'Portrait',
+      description: 'Digital art',
+      price: 150,
+      clientId: 'client-uuid',
+      artistId: 'artist-uuid',
+    };
 
     it('should create a commission', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'client-uuid' });
@@ -80,7 +84,9 @@ describe('CommissionsService', () => {
 
     it('should throw NotFoundException when commission not found', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -98,7 +104,9 @@ describe('CommissionsService', () => {
 
     it('should throw NotFoundException if commission does not exist', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.update('nonexistent', dto)).rejects.toThrow(NotFoundException);
+      await expect(service.update('nonexistent', dto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -112,7 +120,9 @@ describe('CommissionsService', () => {
 
     it('should throw NotFoundException if commission does not exist', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.remove('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

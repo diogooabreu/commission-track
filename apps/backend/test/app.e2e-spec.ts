@@ -12,8 +12,20 @@ describe('AppController (e2e)', () => {
 
   const mockPrismaService = {
     $connect: jest.fn(),
-    user: { create: jest.fn(), findMany: jest.fn(), findUnique: jest.fn(), update: jest.fn(), delete: jest.fn() },
-    commission: { create: jest.fn(), findMany: jest.fn(), findUnique: jest.fn(), update: jest.fn(), delete: jest.fn() },
+    user: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    commission: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
     delivery: { create: jest.fn(), findMany: jest.fn(), findUnique: jest.fn() },
   };
 

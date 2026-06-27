@@ -5,7 +5,6 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let prisma: PrismaService;
 
   const mockPrisma = {
     user: {
@@ -26,7 +25,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -34,10 +32,20 @@ describe('UsersService', () => {
   });
 
   describe('create', () => {
-    const dto = { name: 'John', email: 'john@test.com', password: '123456', role: 'CLIENT' as const };
+    const dto = {
+      name: 'John',
+      email: 'john@test.com',
+      password: '123456',
+      role: 'CLIENT' as const,
+    };
 
     it('should create a user', async () => {
-      const expected = { id: 'uuid-1', ...dto, createdAt: new Date(), updatedAt: new Date() };
+      const expected = {
+        id: 'uuid-1',
+        ...dto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       mockPrisma.user.create.mockResolvedValue(expected);
 
       const result = await service.create(dto);
@@ -77,7 +85,9 @@ describe('UsersService', () => {
 
     it('should throw NotFoundException when user not found', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -96,13 +106,17 @@ describe('UsersService', () => {
 
     it('should throw NotFoundException if user does not exist', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.update('nonexistent', dto)).rejects.toThrow(NotFoundException);
+      await expect(service.update('nonexistent', dto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ConflictException on email conflict', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: 'uuid-1' });
       mockPrisma.user.update.mockRejectedValue({ code: 'P2002' });
-      await expect(service.update('uuid-1', { email: 'taken@test.com' })).rejects.toThrow(ConflictException);
+      await expect(
+        service.update('uuid-1', { email: 'taken@test.com' }),
+      ).rejects.toThrow(ConflictException);
     });
   });
 
@@ -116,7 +130,9 @@ describe('UsersService', () => {
 
     it('should throw NotFoundException if user does not exist', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.remove('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

@@ -1,15 +1,24 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: { name: string; email: string; password: string; role: 'ARTIST' | 'CLIENT' }) {
+  async create(dto: {
+    name: string;
+    email: string;
+    password: string;
+    role: 'ARTIST' | 'CLIENT';
+  }) {
     try {
       return await this.prisma.user.create({ data: dto });
-    } catch (error: any) {
-      if (error?.code === 'P2002') {
+    } catch (error) {
+      if ((error as { code?: string })?.code === 'P2002') {
         throw new ConflictException('Email already exists');
       }
       throw error;
@@ -26,12 +35,20 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, dto: Partial<{ name: string; email: string; password: string; role: 'ARTIST' | 'CLIENT' }>) {
+  async update(
+    id: string,
+    dto: Partial<{
+      name: string;
+      email: string;
+      password: string;
+      role: 'ARTIST' | 'CLIENT';
+    }>,
+  ) {
     await this.findOne(id);
     try {
       return await this.prisma.user.update({ where: { id }, data: dto });
-    } catch (error: any) {
-      if (error?.code === 'P2002') {
+    } catch (error) {
+      if ((error as { code?: string })?.code === 'P2002') {
         throw new ConflictException('Email already exists');
       }
       throw error;

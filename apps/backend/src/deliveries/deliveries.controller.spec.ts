@@ -4,7 +4,6 @@ import { DeliveriesService } from './deliveries.service';
 
 describe('DeliveriesController', () => {
   let controller: DeliveriesController;
-  let service: DeliveriesService;
 
   const mockService = {
     create: jest.fn(),
@@ -18,7 +17,6 @@ describe('DeliveriesController', () => {
     }).compile();
 
     controller = module.get<DeliveriesController>(DeliveriesController);
-    service = module.get<DeliveriesService>(DeliveriesService);
   });
 
   afterEach(() => jest.clearAllMocks());
@@ -29,7 +27,11 @@ describe('DeliveriesController', () => {
 
   describe('create', () => {
     it('should call service.create with DTO', async () => {
-      const dto = { fileUrl: 'https://cdn.com/art.png', notes: 'Final', commissionId: 'comm-uuid' };
+      const dto = {
+        fileUrl: 'https://cdn.com/art.png',
+        notes: 'Final',
+        commissionId: 'comm-uuid',
+      };
       const expected = { id: 'uuid-1', ...dto };
       mockService.create.mockResolvedValue(expected);
 

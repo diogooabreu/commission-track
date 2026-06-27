@@ -5,7 +5,6 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('DeliveriesService', () => {
   let service: DeliveriesService;
-  let prisma: PrismaService;
 
   const mockPrisma = {
     delivery: {
@@ -27,13 +26,16 @@ describe('DeliveriesService', () => {
     }).compile();
 
     service = module.get<DeliveriesService>(DeliveriesService);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => jest.clearAllMocks());
 
   describe('create', () => {
-    const dto = { fileUrl: 'https://cdn.com/art.png', notes: 'Final version', commissionId: 'comm-uuid' };
+    const dto = {
+      fileUrl: 'https://cdn.com/art.png',
+      notes: 'Final version',
+      commissionId: 'comm-uuid',
+    };
 
     it('should create a delivery', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue({ id: 'comm-uuid' });
@@ -57,7 +59,9 @@ describe('DeliveriesService', () => {
 
       const result = await service.findByCommission('comm-uuid');
       expect(result).toEqual(expected);
-      expect(mockPrisma.delivery.findMany).toHaveBeenCalledWith({ where: { commissionId: 'comm-uuid' } });
+      expect(mockPrisma.delivery.findMany).toHaveBeenCalledWith({
+        where: { commissionId: 'comm-uuid' },
+      });
     });
   });
 });

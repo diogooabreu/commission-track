@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsEmail, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { Role } from './create-user.dto';
 
 export class UpdateUserDto {
