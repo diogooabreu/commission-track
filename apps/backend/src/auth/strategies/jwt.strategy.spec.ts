@@ -17,15 +17,25 @@ describe('JwtStrategy', () => {
   });
 
   describe('validate', () => {
-    it('should return user object when payload is valid', async () => {
+    it('should return user without password when payload is valid', async () => {
       const payload = { sub: 'uuid-1', email: 'john@test.com', role: 'CLIENT' };
-      const user = { id: 'uuid-1', email: 'john@test.com', role: 'CLIENT' };
+      const user = {
+        id: 'uuid-1',
+        email: 'john@test.com',
+        role: 'CLIENT',
+        password: '$2a$10$hashhash',
+      };
       (mockAuthService.validateUser as jest.Mock).mockResolvedValue(user);
 
       const result = await strategy.validate(payload);
 
       expect(mockAuthService.validateUser).toHaveBeenCalledWith('uuid-1');
-      expect(result).toEqual(user);
+      expect(result).toEqual({
+        id: 'uuid-1',
+        email: 'john@test.com',
+        role: 'CLIENT',
+      });
+      expect(result).not.toHaveProperty('password');
     });
 
     it('should throw when user is not found', async () => {

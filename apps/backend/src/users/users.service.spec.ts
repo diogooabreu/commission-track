@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
+
+jest.mock('bcryptjs', () => ({
+  hash: jest.fn().mockResolvedValue('$2a$10$hashed_password'),
+}));
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -118,14 +123,37 @@ describe('UsersService', () => {
         service.update('uuid-1', { email: 'taken@test.com' }),
       ).rejects.toThrow(ConflictException);
     });
+
+    it('should hash password when provided', async () => {
+      const existing = { id: 'uuid-1', name: 'John' };
+      mockPrisma.user.findUnique.mockResolvedValue(existing);
+      const updated = {
+        id: 'uuid-1',
+        name: 'John',
+        password: '$2a$10$hashed_password',
+      };
+      mockPrisma.user.update.mockResolvedValue(updated);
+
+      const result = await service.update('uuid-1', {
+        password: 'new-password',
+      });
+
+      expect(bcrypt.hash).toHaveBeenCalledWith('new-password', 10);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'uuid-1' },
+        data: { password: '$2a$10$hashed_password' },
+      });
+      expect(result).toEqual(updated);
+    });
   });
 
   describe('remove', () => {
-    it('should delete a user', async () => {
+    it('should delete a user and return it', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: 'uuid-1' });
       mockPrisma.user.delete.mockResolvedValue({ id: 'uuid-1' });
 
-      await expect(service.remove('uuid-1')).resolves.toBeUndefined();
+      const result = await service.remove('uuid-1');
+      expect(result).toEqual({ id: 'uuid-1' });
     });
 
     it('should throw NotFoundException if user does not exist', async () => {

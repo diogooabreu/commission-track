@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CommissionsService } from './commissions.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -38,28 +38,32 @@ describe('CommissionsService', () => {
       description: 'Digital art',
       price: 150,
       clientId: 'client-uuid',
-      artistId: 'artist-uuid',
     };
+    const artistId = 'artist-uuid';
 
     it('should create a commission', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'client-uuid' });
       mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'artist-uuid' });
-      const expected = { id: 'uuid-1', ...dto, status: 'PENDING' };
+      const expected = { id: 'uuid-1', ...dto, artistId, status: 'PENDING' };
       mockPrisma.commission.create.mockResolvedValue(expected);
 
-      const result = await service.create(dto);
+      const result = await service.create(dto, artistId);
       expect(result).toEqual(expected);
     });
 
     it('should throw NotFoundException when client does not exist', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.create(dto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(dto, artistId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw NotFoundException when artist does not exist', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'client-uuid' });
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-      await expect(service.create(dto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(dto, artistId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -135,35 +139,66 @@ describe('CommissionsService', () => {
 
   describe('update', () => {
     const dto = { title: 'Updated' };
+    const userId = 'artist-uuid';
 
-    it('should update a commission', async () => {
-      mockPrisma.commission.findUnique.mockResolvedValue({ id: 'uuid-1' });
+    it('should update a commission when artist is the owner', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        artistId: 'artist-uuid',
+      });
       const updated = { id: 'uuid-1', title: 'Updated' };
       mockPrisma.commission.update.mockResolvedValue(updated);
 
-      const result = await service.update('uuid-1', dto);
+      const result = await service.update('uuid-1', dto, userId);
       expect(result).toEqual(updated);
+    });
+
+    it('should throw ForbiddenException when artist is not the owner', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        artistId: 'other-artist',
+      });
+
+      await expect(service.update('uuid-1', dto, userId)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should throw NotFoundException if commission does not exist', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.update('nonexistent', dto)).rejects.toThrow(
+      await expect(service.update('nonexistent', dto, userId)).rejects.toThrow(
         NotFoundException,
       );
     });
   });
 
   describe('remove', () => {
-    it('should delete a commission', async () => {
-      mockPrisma.commission.findUnique.mockResolvedValue({ id: 'uuid-1' });
+    const userId = 'artist-uuid';
+
+    it('should delete a commission when artist is the owner', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        artistId: 'artist-uuid',
+      });
       mockPrisma.commission.delete.mockResolvedValue({ id: 'uuid-1' });
 
-      await expect(service.remove('uuid-1')).resolves.toBeUndefined();
+      await expect(service.remove('uuid-1', userId)).resolves.toBeUndefined();
+    });
+
+    it('should throw ForbiddenException when artist is not the owner', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        artistId: 'other-artist',
+      });
+
+      await expect(service.remove('uuid-1', userId)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should throw NotFoundException if commission does not exist', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.remove('nonexistent')).rejects.toThrow(
+      await expect(service.remove('nonexistent', userId)).rejects.toThrow(
         NotFoundException,
       );
     });

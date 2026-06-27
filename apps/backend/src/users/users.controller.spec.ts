@@ -35,23 +35,6 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should call service.create with DTO', async () => {
-      const dto = {
-        name: 'John',
-        email: 'john@test.com',
-        password: '123456',
-        role: 'CLIENT' as const,
-      };
-      const expected = { id: 'uuid-1', ...dto };
-      mockService.create.mockResolvedValue(expected);
-
-      const result = await controller.create(dto);
-      expect(result).toEqual(expected);
-      expect(mockService.create).toHaveBeenCalledWith(dto);
-    });
-  });
-
   describe('findAll', () => {
     it('should return all users', async () => {
       const expected = [{ id: 'uuid-1', name: 'John' }];
