@@ -3,22 +3,20 @@ import { AuthService } from '../auth.service';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
-  let authService: AuthService;
 
-  const mockAuthService = {
+  const mockAuthService: Partial<AuthService> = {
     validateUser: jest.fn(),
   };
 
   beforeEach(() => {
-    authService = mockAuthService as any;
-    strategy = new JwtStrategy(authService);
+    strategy = new JwtStrategy(mockAuthService as AuthService);
   });
 
   describe('validate', () => {
     it('should return user object when payload is valid', async () => {
       const payload = { sub: 'uuid-1', email: 'john@test.com', role: 'CLIENT' };
       const user = { id: 'uuid-1', email: 'john@test.com', role: 'CLIENT' };
-      mockAuthService.validateUser.mockResolvedValue(user);
+      (mockAuthService.validateUser as jest.Mock).mockResolvedValue(user);
 
       const result = await strategy.validate(payload);
 
@@ -27,8 +25,12 @@ describe('JwtStrategy', () => {
     });
 
     it('should throw when user is not found', async () => {
-      const payload = { sub: 'nonexistent', email: 'test@test.com', role: 'CLIENT' };
-      mockAuthService.validateUser.mockResolvedValue(null);
+      const payload = {
+        sub: 'nonexistent',
+        email: 'test@test.com',
+        role: 'CLIENT',
+      };
+      (mockAuthService.validateUser as jest.Mock).mockResolvedValue(null);
 
       await expect(strategy.validate(payload)).rejects.toThrow();
     });

@@ -64,29 +64,72 @@ describe('CommissionsService', () => {
   });
 
   describe('findAll', () => {
-    it('should return all commissions', async () => {
+    it('should return all commissions for ARTIST', async () => {
       const expected = [{ id: 'uuid-1', title: 'Portrait' }];
       mockPrisma.commission.findMany.mockResolvedValue(expected);
 
-      const result = await service.findAll();
+      const result = await service.findAll('artist-uuid', 'ARTIST');
+
+      expect(mockPrisma.commission.findMany).toHaveBeenCalledWith();
+      expect(result).toEqual(expected);
+    });
+
+    it('should return only own commissions for CLIENT', async () => {
+      const expected = [
+        { id: 'uuid-1', title: 'Portrait', clientId: 'client-uuid' },
+      ];
+      mockPrisma.commission.findMany.mockResolvedValue(expected);
+
+      const result = await service.findAll('client-uuid', 'CLIENT');
+
+      expect(mockPrisma.commission.findMany).toHaveBeenCalledWith({
+        where: { clientId: 'client-uuid' },
+      });
       expect(result).toEqual(expected);
     });
   });
 
   describe('findOne', () => {
-    it('should return a commission by id', async () => {
+    it('should return a commission by id for ARTIST', async () => {
       const expected = { id: 'uuid-1', title: 'Portrait' };
       mockPrisma.commission.findUnique.mockResolvedValue(expected);
 
-      const result = await service.findOne('uuid-1');
+      const result = await service.findOne('uuid-1', 'artist-uuid', 'ARTIST');
+
       expect(result).toEqual(expected);
+    });
+
+    it('should return a commission by id for CLIENT owner', async () => {
+      const expected = {
+        id: 'uuid-1',
+        title: 'Portrait',
+        clientId: 'client-uuid',
+      };
+      mockPrisma.commission.findUnique.mockResolvedValue(expected);
+
+      const result = await service.findOne('uuid-1', 'client-uuid', 'CLIENT');
+
+      expect(result).toEqual(expected);
+    });
+
+    it('should throw NotFoundException when CLIENT tries to access another commission', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'uuid-1',
+        title: 'Portrait',
+        clientId: 'other-client',
+      });
+
+      await expect(
+        service.findOne('uuid-1', 'client-uuid', 'CLIENT'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException when commission not found', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.findOne('nonexistent')).rejects.toThrow(
-        NotFoundException,
-      );
+
+      await expect(
+        service.findOne('nonexistent', 'any-id', 'ARTIST'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

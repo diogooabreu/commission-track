@@ -30,7 +30,12 @@ describe('AuthController', () => {
         password: 'Str0ng!',
         role: Role.CLIENT,
       };
-      const expected = { id: 'uuid-1', name: dto.name, email: dto.email, role: dto.role };
+      const expected = {
+        id: 'uuid-1',
+        name: dto.name,
+        email: dto.email,
+        role: dto.role,
+      };
       mockAuthService.register.mockResolvedValue(expected);
 
       const result = await controller.register(dto);

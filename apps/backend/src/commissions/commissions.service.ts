@@ -25,15 +25,20 @@ export class CommissionsService {
     return this.prisma.commission.create({ data: dto });
   }
 
-  async findAll() {
+  async findAll(userId: string, role: string) {
+    if (role === 'CLIENT') {
+      return this.prisma.commission.findMany({
+        where: { clientId: userId },
+      });
+    }
     return this.prisma.commission.findMany();
   }
 
-  async findOne(id: string) {
-    const commission = await this.prisma.commission.findUnique({
-      where: { id },
-    });
-    if (!commission) throw new NotFoundException('Commission not found');
+  async findOne(id: string, userId: string, role: string) {
+    const commission = await this.findById(id);
+    if (role === 'CLIENT' && commission.clientId !== userId) {
+      throw new NotFoundException('Commission not found');
+    }
     return commission;
   }
 
@@ -41,12 +46,20 @@ export class CommissionsService {
     id: string,
     dto: Partial<{ title: string; description: string; price: number }>,
   ) {
-    await this.findOne(id);
+    await this.findById(id);
     return this.prisma.commission.update({ where: { id }, data: dto });
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    await this.findById(id);
     await this.prisma.commission.delete({ where: { id } });
+  }
+
+  private async findById(id: string) {
+    const commission = await this.prisma.commission.findUnique({
+      where: { id },
+    });
+    if (!commission) throw new NotFoundException('Commission not found');
+    return commission;
   }
 }

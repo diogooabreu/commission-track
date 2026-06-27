@@ -1,4 +1,5 @@
 import { Reflector } from '@nestjs/core';
+import { ExecutionContext } from '@nestjs/common';
 import { RolesGuard } from './roles.guard';
 import { Role } from '../../users/dto/create-user.dto';
 
@@ -6,7 +7,7 @@ describe('RolesGuard', () => {
   let guard: RolesGuard;
   let reflector: Reflector;
 
-  const mockExecutionContext = (userRole?: string) => {
+  const mockExecutionContext = (userRole?: string): ExecutionContext => {
     const handler = () => {};
     return {
       switchToHttp: () => ({
@@ -16,7 +17,7 @@ describe('RolesGuard', () => {
       }),
       getHandler: handler,
       getClass: () => ({}),
-    } as any;
+    } as unknown as ExecutionContext;
   };
 
   beforeEach(() => {
