@@ -1,0 +1,42 @@
+name: CI
+
+on: push
+
+jobs:
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx prisma generate
+        working-directory: apps/backend
+        env:
+          DATABASE_URL: postgresql://dummy:placeholder@localhost:5432/ci
+      - run: npm run lint -w apps/backend
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run lint -w apps/frontend
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx prisma generate
+        working-directory: apps/backend
+        env:
+          DATABASE_URL: postgresql://dummy:placeholder@localhost:5432/ci
+      - run: npm run test -w apps/backend

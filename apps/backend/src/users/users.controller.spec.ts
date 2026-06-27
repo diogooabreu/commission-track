@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
-  let service: UsersService;
 
   const mockService = {
     create: jest.fn(),
@@ -21,7 +20,6 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    service = module.get<UsersService>(UsersService);
   });
 
   afterEach(() => jest.clearAllMocks());
@@ -32,7 +30,12 @@ describe('UsersController', () => {
 
   describe('create', () => {
     it('should call service.create with DTO', async () => {
-      const dto = { name: 'John', email: 'john@test.com', password: '123456', role: 'CLIENT' as const };
+      const dto = {
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+        role: 'CLIENT' as const,
+      };
       const expected = { id: 'uuid-1', ...dto };
       mockService.create.mockResolvedValue(expected);
 
