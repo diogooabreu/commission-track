@@ -59,3 +59,9 @@ npm run lint               # ESLint + Prettier
 - Prisma v7 adaptado: trocado `prisma-client` → `prisma-client-js` por compatibilidade Jest
 - 6 commits atômicos, 40 testes unitários + 1 e2e passando
 - `dist/` removido do versionamento e adicionado ao `.gitignore`
+
+## Resolução — PrismaClient não inicializava (Sessão 07/06/2026)
+- **Problema:** `PrismaClientInitializationError` ao instanciar — Prisma v7 `prisma-client-js` exige `adapter` ou `accelerateUrl` no construtor (engine type "client" não aceita `datasources`)
+- **Solução:** Instalado `@prisma/adapter-neon` + `@neondatabase/serverless`. PrismaService agora passa `new PrismaNeon({ connectionString })` como adapter
+- **Importante:** `import 'dotenv/config'` permanece no topo de `prisma.service.ts` para garantir que DATABASE_URL esteja carregada antes do construtor
+- **Resultado:** API no ar em `localhost:3000/api/v1`. CRUD completo funcional com Neon PostgreSQL. DELETE em entidades com dependências retorna 500 (FK constraint — esperado, sem cascade configurado)

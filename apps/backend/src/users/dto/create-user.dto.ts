@@ -6,17 +6,17 @@ export enum Role {
 }
 
 export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'O nome deve ser um texto válido' })
+  @IsNotEmpty({ message: 'O nome é obrigatório' })
   name: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'Informe um e-mail válido' })
   email: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'A senha deve ser um texto válido' })
+  @IsNotEmpty({ message: 'A senha é obrigatória' })
   password: string;
 
-  @IsEnum(Role)
+  @IsEnum(Role, { message: 'O cargo deve ser ARTIST ou CLIENT' })
   role: Role;
 }

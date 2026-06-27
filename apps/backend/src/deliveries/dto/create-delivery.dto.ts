@@ -1,16 +1,16 @@
 import { IsString, IsNotEmpty, IsOptional, IsUrl } from 'class-validator';
 
 export class CreateDeliveryDto {
-  @IsString()
-  @IsNotEmpty()
-  @IsUrl()
+  @IsString({ message: 'A URL do arquivo deve ser um texto válido' })
+  @IsNotEmpty({ message: 'A URL do arquivo é obrigatória' })
+  @IsUrl({}, { message: 'Informe uma URL válida para o arquivo' })
   fileUrl: string;
 
-  @IsString()
+  @IsString({ message: 'As observações devem ser um texto válido' })
   @IsOptional()
   notes?: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'O ID da comissão deve ser um texto válido' })
+  @IsNotEmpty({ message: 'O ID da comissão é obrigatório' })
   commissionId: string;
 }
