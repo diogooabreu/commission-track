@@ -101,13 +101,46 @@ describe('UsersController', () => {
   });
 
   describe('update', () => {
-    it('should update a user', async () => {
+    it('should allow ARTIST to update any user', async () => {
+      const user = { id: 'artist-uuid', role: 'ARTIST' };
+      const req = { user };
       const dto = { name: 'Updated' };
       const expected = { id: 'uuid-1', ...dto };
       mockService.update.mockResolvedValue(expected);
 
-      const result = await controller.update('uuid-1', dto);
+      const result = await controller.update(
+        req as unknown as Request,
+        'uuid-1',
+        dto,
+      );
       expect(result).toEqual(expected);
+      expect(mockService.update).toHaveBeenCalledWith('uuid-1', dto);
+    });
+
+    it('should allow CLIENT to update own data', async () => {
+      const user = { id: 'my-uuid', role: 'CLIENT' };
+      const req = { user };
+      const dto = { name: 'Updated' };
+      const expected = { id: 'my-uuid', ...dto };
+      mockService.update.mockResolvedValue(expected);
+
+      const result = await controller.update(
+        req as unknown as Request,
+        'my-uuid',
+        dto,
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should throw ForbiddenException when CLIENT updates other user', () => {
+      const user = { id: 'my-uuid', role: 'CLIENT' };
+      const req = { user };
+
+      expect(() =>
+        controller.update(req as unknown as Request, 'other-uuid', {
+          name: 'x',
+        }),
+      ).toThrow(ForbiddenException);
     });
   });
 

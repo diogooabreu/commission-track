@@ -26,8 +26,9 @@ export class DeliveriesController {
   @UseGuards(RolesGuard)
   @Roles(Role.ARTIST)
   @Post()
-  create(@Body() dto: CreateDeliveryDto) {
-    return this.deliveriesService.create(dto);
+  create(@Req() req: Request, @Body() dto: CreateDeliveryDto) {
+    const user = req.user as { id: string };
+    return this.deliveriesService.create(dto, user.id);
   }
 
   @Get(':commissionId')

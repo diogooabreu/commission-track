@@ -17,6 +17,7 @@ export class UsersService {
     role: 'ARTIST' | 'CLIENT';
   }) {
     try {
+      dto.email = dto.email.toLowerCase().trim();
       return await this.prisma.user.create({ data: dto });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
@@ -27,7 +28,7 @@ export class UsersService {
   }
 
   async findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({ omit: { password: true } });
   }
 
   async findByEmail(email: string) {
@@ -35,7 +36,10 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      omit: { password: true },
+    });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -50,11 +54,18 @@ export class UsersService {
     }>,
   ) {
     await this.findOne(id);
+    if (dto.email) {
+      dto.email = dto.email.toLowerCase().trim();
+    }
     if (dto.password) {
       dto.password = await bcrypt.hash(dto.password, 10);
     }
     try {
-      return await this.prisma.user.update({ where: { id }, data: dto });
+      return await this.prisma.user.update({
+        where: { id },
+        data: dto,
+        omit: { password: true },
+      });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
         throw new ConflictException('Email already exists');
@@ -65,6 +76,9 @@ export class UsersService {
 
   async remove(id: string) {
     await this.findOne(id);
-    return await this.prisma.user.delete({ where: { id } });
+    return await this.prisma.user.delete({
+      where: { id },
+      omit: { password: true },
+    });
   }
 }
