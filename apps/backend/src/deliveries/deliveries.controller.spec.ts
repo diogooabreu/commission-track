@@ -38,7 +38,9 @@ describe('DeliveriesController', () => {
   });
 
   describe('create', () => {
-    it('should call service.create with DTO', async () => {
+    it('should call service.create with DTO and user id', async () => {
+      const user = { id: 'artist-uuid', role: Role.ARTIST };
+      const req = { user };
       const dto = {
         fileUrl: 'https://cdn.com/art.png',
         notes: 'Final',
@@ -47,7 +49,9 @@ describe('DeliveriesController', () => {
       const expected = { id: 'uuid-1', ...dto };
       mockService.create.mockResolvedValue(expected);
 
-      const result = await controller.create(dto);
+      const result = await controller.create(req as unknown as Request, dto);
+
+      expect(mockService.create).toHaveBeenCalledWith(dto, 'artist-uuid');
       expect(result).toEqual(expected);
     });
   });

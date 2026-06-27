@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { DeliveriesService } from './deliveries.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -37,18 +37,34 @@ describe('DeliveriesService', () => {
       commissionId: 'comm-uuid',
     };
 
-    it('should create a delivery', async () => {
-      mockPrisma.commission.findUnique.mockResolvedValue({ id: 'comm-uuid' });
+    it('should create a delivery when artist owns the commission', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'comm-uuid',
+        artistId: 'artist-uuid',
+      });
       const expected = { id: 'uuid-1', ...dto };
       mockPrisma.delivery.create.mockResolvedValue(expected);
 
-      const result = await service.create(dto);
+      const result = await service.create(dto, 'artist-uuid');
       expect(result).toEqual(expected);
+    });
+
+    it('should throw ForbiddenException when artist does not own the commission', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'comm-uuid',
+        artistId: 'other-artist',
+      });
+
+      await expect(service.create(dto, 'artist-uuid')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should throw NotFoundException when commission does not exist', async () => {
       mockPrisma.commission.findUnique.mockResolvedValue(null);
-      await expect(service.create(dto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(dto, 'artist-uuid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

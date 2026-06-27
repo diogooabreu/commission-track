@@ -49,11 +49,20 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+  update(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    const user = req.user as { id: string; role: Role };
+    if (user.role !== Role.ARTIST && user.id !== id) {
+      throw new ForbiddenException('You can only update your own data');
+    }
     return this.usersService.update(id, dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ARTIST)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     await this.usersService.remove(id);

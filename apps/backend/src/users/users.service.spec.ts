@@ -37,54 +37,74 @@ describe('UsersService', () => {
   });
 
   describe('create', () => {
-    const dto = {
+    const rawDto = {
       name: 'John',
-      email: 'john@test.com',
+      email: '  JOHN@Example.com  ',
       password: '123456',
       role: 'CLIENT' as const,
     };
 
-    it('should create a user', async () => {
+    it('should create a user with normalized email', async () => {
       const expected = {
         id: 'uuid-1',
-        ...dto,
+        name: 'John',
+        email: 'john@example.com',
+        password: '123456',
+        role: 'CLIENT' as const,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       mockPrisma.user.create.mockResolvedValue(expected);
 
-      const result = await service.create(dto);
+      const result = await service.create(rawDto);
+
+      expect(mockPrisma.user.create).toHaveBeenCalledWith({
+        data: {
+          name: 'John',
+          email: 'john@example.com',
+          password: '123456',
+          role: 'CLIENT',
+        },
+      });
       expect(result).toEqual(expected);
-      expect(mockPrisma.user.create).toHaveBeenCalledWith({ data: dto });
     });
 
     it('should throw ConflictException on duplicate email', async () => {
       mockPrisma.user.create.mockRejectedValue({ code: 'P2002' });
-      await expect(service.create(dto)).rejects.toThrow(ConflictException);
+      await expect(service.create(rawDto)).rejects.toThrow(ConflictException);
     });
 
     it('should throw on unexpected error', async () => {
       mockPrisma.user.create.mockRejectedValue(new Error('DB error'));
-      await expect(service.create(dto)).rejects.toThrow('DB error');
+      await expect(service.create(rawDto)).rejects.toThrow('DB error');
     });
   });
 
   describe('findAll', () => {
-    it('should return all users', async () => {
+    it('should return all users without password', async () => {
       const expected = [{ id: 'uuid-1', name: 'John' }];
       mockPrisma.user.findMany.mockResolvedValue(expected);
 
       const result = await service.findAll();
+
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
+        omit: { password: true },
+      });
       expect(result).toEqual(expected);
     });
   });
 
   describe('findOne', () => {
-    it('should return a user by id', async () => {
+    it('should return a user by id without password', async () => {
       const expected = { id: 'uuid-1', name: 'John' };
       mockPrisma.user.findUnique.mockResolvedValue(expected);
 
       const result = await service.findOne('uuid-1');
+
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 'uuid-1' },
+        omit: { password: true },
+      });
       expect(result).toEqual(expected);
     });
 
@@ -106,6 +126,12 @@ describe('UsersService', () => {
       mockPrisma.user.update.mockResolvedValue(updated);
 
       const result = await service.update('uuid-1', dto);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'uuid-1' },
+        data: { name: 'Updated' },
+        omit: { password: true },
+      });
       expect(result).toEqual(updated);
     });
 
@@ -114,6 +140,28 @@ describe('UsersService', () => {
       await expect(service.update('nonexistent', dto)).rejects.toThrow(
         NotFoundException,
       );
+    });
+
+    it('should normalize email on update', async () => {
+      const existing = { id: 'uuid-1', name: 'John' };
+      mockPrisma.user.findUnique.mockResolvedValue(existing);
+      const updated = {
+        id: 'uuid-1',
+        name: 'John',
+        email: 'normalized@test.com',
+      };
+      mockPrisma.user.update.mockResolvedValue(updated);
+
+      const result = await service.update('uuid-1', {
+        email: '  NORMALIZED@Test.com  ',
+      });
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'uuid-1' },
+        data: { email: 'normalized@test.com' },
+        omit: { password: true },
+      });
+      expect(result).toEqual(updated);
     });
 
     it('should throw ConflictException on email conflict', async () => {
@@ -142,17 +190,23 @@ describe('UsersService', () => {
       expect(mockPrisma.user.update).toHaveBeenCalledWith({
         where: { id: 'uuid-1' },
         data: { password: '$2a$10$hashed_password' },
+        omit: { password: true },
       });
       expect(result).toEqual(updated);
     });
   });
 
   describe('remove', () => {
-    it('should delete a user and return it', async () => {
+    it('should delete a user and return it without password', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: 'uuid-1' });
       mockPrisma.user.delete.mockResolvedValue({ id: 'uuid-1' });
 
       const result = await service.remove('uuid-1');
+
+      expect(mockPrisma.user.delete).toHaveBeenCalledWith({
+        where: { id: 'uuid-1' },
+        omit: { password: true },
+      });
       expect(result).toEqual({ id: 'uuid-1' });
     });
 
