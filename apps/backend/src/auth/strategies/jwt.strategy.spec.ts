@@ -8,6 +8,10 @@ describe('JwtStrategy', () => {
     validateUser: jest.fn(),
   };
 
+  beforeAll(() => {
+    process.env.JWT_SECRET = 'test-secret';
+  });
+
   beforeEach(() => {
     strategy = new JwtStrategy(mockAuthService as AuthService);
   });
