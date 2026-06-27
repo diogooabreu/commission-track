@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
 import { CommissionsController } from './commissions.controller';
 import { CommissionsService } from './commissions.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role } from '../users/dto/create-user.dto';
 
 describe('CommissionsController', () => {
   let controller: CommissionsController;
@@ -13,11 +17,19 @@ describe('CommissionsController', () => {
     remove: jest.fn(),
   };
 
+  const mockJwtGuard = { canActivate: jest.fn(() => true) };
+  const mockRolesGuard = { canActivate: jest.fn(() => true) };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CommissionsController],
       providers: [{ provide: CommissionsService, useValue: mockService }],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockJwtGuard)
+      .overrideGuard(RolesGuard)
+      .useValue(mockRolesGuard)
+      .compile();
 
     controller = module.get<CommissionsController>(CommissionsController);
   });
@@ -46,21 +58,39 @@ describe('CommissionsController', () => {
   });
 
   describe('findAll', () => {
-    it('should return all commissions', async () => {
+    it('should return all commissions for authenticated user', async () => {
+      const user = { id: 'artist-uuid', role: Role.ARTIST };
+      const req = { user };
       const expected = [{ id: 'uuid-1', title: 'Portrait' }];
       mockService.findAll.mockResolvedValue(expected);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll(req as unknown as Request);
+
+      expect(mockService.findAll).toHaveBeenCalledWith(
+        'artist-uuid',
+        Role.ARTIST,
+      );
       expect(result).toEqual(expected);
     });
   });
 
   describe('findOne', () => {
     it('should return a commission by id', async () => {
+      const user = { id: 'client-uuid', role: Role.CLIENT };
+      const req = { user };
       const expected = { id: 'uuid-1', title: 'Portrait' };
       mockService.findOne.mockResolvedValue(expected);
 
-      const result = await controller.findOne('uuid-1');
+      const result = await controller.findOne(
+        req as unknown as Request,
+        'uuid-1',
+      );
+
+      expect(mockService.findOne).toHaveBeenCalledWith(
+        'uuid-1',
+        'client-uuid',
+        Role.CLIENT,
+      );
       expect(result).toEqual(expected);
     });
   });

@@ -10,7 +10,22 @@
     "dev:api": "npm run start:dev -w apps/backend",
     "dev:web": "npm run start:dev -w apps/frontend"
   },
-  "keywords": ["nestjs", "react", "monorepo"],
+  "keywords": [
+    "nestjs",
+    "react",
+    "monorepo"
+  ],
   "author": "Diogo Nery de Abreu",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
+    "bcryptjs": "^3.0.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/passport-jwt": "^4.0.1"
+  }
 }
