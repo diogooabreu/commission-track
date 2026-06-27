@@ -14,7 +14,16 @@ export class DeliveriesService {
     return this.prisma.delivery.create({ data: dto });
   }
 
-  async findByCommission(commissionId: string) {
+  async findByCommission(commissionId: string, userId: string, role: string) {
+    const commission = await this.prisma.commission.findUnique({
+      where: { id: commissionId },
+    });
+    if (!commission) throw new NotFoundException('Commission not found');
+
+    if (role === 'CLIENT' && commission.clientId !== userId) {
+      throw new NotFoundException('Commission not found');
+    }
+
     return this.prisma.delivery.findMany({ where: { commissionId } });
   }
 }

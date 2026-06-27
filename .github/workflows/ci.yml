@@ -40,3 +40,5 @@ jobs:
         env:
           DATABASE_URL: postgresql://dummy:placeholder@localhost:5432/ci
       - run: npm run test -w apps/backend
+        env:
+          JWT_SECRET: ci-secret-for-testing-only

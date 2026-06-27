@@ -53,15 +53,60 @@ describe('DeliveriesService', () => {
   });
 
   describe('findByCommission', () => {
-    it('should return deliveries for a commission', async () => {
+    it('should return deliveries for ARTIST', async () => {
       const expected = [{ id: 'uuid-1', fileUrl: 'https://cdn.com/art.png' }];
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'comm-uuid',
+        clientId: 'client-uuid',
+      });
       mockPrisma.delivery.findMany.mockResolvedValue(expected);
 
-      const result = await service.findByCommission('comm-uuid');
-      expect(result).toEqual(expected);
+      const result = await service.findByCommission(
+        'comm-uuid',
+        'artist-uuid',
+        'ARTIST',
+      );
+
       expect(mockPrisma.delivery.findMany).toHaveBeenCalledWith({
         where: { commissionId: 'comm-uuid' },
       });
+      expect(result).toEqual(expected);
+    });
+
+    it('should return deliveries for CLIENT owner', async () => {
+      const expected = [{ id: 'uuid-1', fileUrl: 'https://cdn.com/art.png' }];
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'comm-uuid',
+        clientId: 'client-uuid',
+      });
+      mockPrisma.delivery.findMany.mockResolvedValue(expected);
+
+      const result = await service.findByCommission(
+        'comm-uuid',
+        'client-uuid',
+        'CLIENT',
+      );
+
+      expect(result).toEqual(expected);
+    });
+
+    it('should throw NotFoundException for CLIENT not owning the commission', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue({
+        id: 'comm-uuid',
+        clientId: 'other-client',
+      });
+
+      await expect(
+        service.findByCommission('comm-uuid', 'client-uuid', 'CLIENT'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException when commission does not exist', async () => {
+      mockPrisma.commission.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.findByCommission('comm-uuid', 'any-id', 'ARTIST'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

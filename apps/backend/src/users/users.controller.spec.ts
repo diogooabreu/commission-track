@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -13,11 +15,16 @@ describe('UsersController', () => {
     remove: jest.fn(),
   };
 
+  const mockGuard = { canActivate: jest.fn(() => true) };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [{ provide: UsersService, useValue: mockService }],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockGuard)
+      .compile();
 
     controller = module.get<UsersController>(UsersController);
   });
@@ -62,6 +69,20 @@ describe('UsersController', () => {
 
       const result = await controller.findOne('uuid-1');
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('me', () => {
+    it('should return the current user from request', () => {
+      const user = {
+        id: 'uuid-1',
+        name: 'John',
+        email: 'john@test.com',
+        role: 'CLIENT',
+      };
+      const req = { user };
+      const result = controller.getProfile(req as unknown as Request);
+      expect(result).toEqual(user);
     });
   });
 
