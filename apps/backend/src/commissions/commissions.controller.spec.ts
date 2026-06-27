@@ -14,6 +14,7 @@ describe('CommissionsController', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+    updateStatus: jest.fn(),
     remove: jest.fn(),
   };
 
@@ -115,6 +116,29 @@ describe('CommissionsController', () => {
       expect(mockService.update).toHaveBeenCalledWith(
         'uuid-1',
         dto,
+        'artist-uuid',
+      );
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('updateStatus', () => {
+    it('should call service.updateStatus with status and userId', async () => {
+      const user = { id: 'artist-uuid' };
+      const req = { user };
+      const dto = { status: 'IN_PROGRESS' };
+      const expected = { id: 'uuid-1', status: 'IN_PROGRESS' };
+      mockService.updateStatus.mockResolvedValue(expected);
+
+      const result = await controller.updateStatus(
+        req as unknown as Request,
+        'uuid-1',
+        dto,
+      );
+
+      expect(mockService.updateStatus).toHaveBeenCalledWith(
+        'uuid-1',
+        'IN_PROGRESS',
         'artist-uuid',
       );
       expect(result).toEqual(expected);

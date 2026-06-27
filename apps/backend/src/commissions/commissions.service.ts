@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+import { Status } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -58,6 +59,17 @@ export class CommissionsService {
       throw new ForbiddenException('You can only update your own commissions');
     }
     return this.prisma.commission.update({ where: { id }, data: dto });
+  }
+
+  async updateStatus(id: string, status: Status, userId: string) {
+    const commission = await this.findById(id);
+    if (commission.artistId !== userId) {
+      throw new ForbiddenException('You can only update your own commissions');
+    }
+    return this.prisma.commission.update({
+      where: { id },
+      data: { status },
+    });
   }
 
   async remove(id: string, userId: string) {
