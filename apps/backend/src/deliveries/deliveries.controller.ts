@@ -7,14 +7,17 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { DeliveriesService } from './deliveries.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/dto/create-user.dto';
-import { Request } from 'express';
+import type { Request } from 'express';
 
+@ApiTags('Deliveries')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('deliveries')
 export class DeliveriesController {

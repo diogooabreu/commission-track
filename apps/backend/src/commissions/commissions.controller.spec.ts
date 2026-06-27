@@ -41,18 +41,21 @@ describe('CommissionsController', () => {
   });
 
   describe('create', () => {
-    it('should call service.create with DTO', async () => {
+    it('should call service.create with DTO and authenticated artist', async () => {
+      const user = { id: 'artist-uuid' };
+      const req = { user };
       const dto = {
         title: 'Portrait',
         description: 'Art',
         price: 150,
         clientId: 'c1',
-        artistId: 'a1',
       };
-      const expected = { id: 'uuid-1', ...dto };
+      const expected = { id: 'uuid-1', ...dto, artistId: 'artist-uuid' };
       mockService.create.mockResolvedValue(expected);
 
-      const result = await controller.create(dto);
+      const result = await controller.create(req as unknown as Request, dto);
+
+      expect(mockService.create).toHaveBeenCalledWith(dto, 'artist-uuid');
       expect(result).toEqual(expected);
     });
   });
@@ -96,20 +99,37 @@ describe('CommissionsController', () => {
   });
 
   describe('update', () => {
-    it('should update a commission', async () => {
+    it('should call service.update with DTO and userId', async () => {
+      const user = { id: 'artist-uuid' };
+      const req = { user };
       const dto = { title: 'Updated' };
       const expected = { id: 'uuid-1', title: 'Updated' };
       mockService.update.mockResolvedValue(expected);
 
-      const result = await controller.update('uuid-1', dto);
+      const result = await controller.update(
+        req as unknown as Request,
+        'uuid-1',
+        dto,
+      );
+
+      expect(mockService.update).toHaveBeenCalledWith(
+        'uuid-1',
+        dto,
+        'artist-uuid',
+      );
       expect(result).toEqual(expected);
     });
   });
 
   describe('remove', () => {
-    it('should delete a commission', async () => {
-      await controller.remove('uuid-1');
-      expect(mockService.remove).toHaveBeenCalledWith('uuid-1');
+    it('should call service.remove with id and userId', async () => {
+      const user = { id: 'artist-uuid' };
+      const req = { user };
+      mockService.remove.mockResolvedValue(undefined);
+
+      await controller.remove(req as unknown as Request, 'uuid-1');
+
+      expect(mockService.remove).toHaveBeenCalledWith('uuid-1', 'artist-uuid');
     });
   });
 });

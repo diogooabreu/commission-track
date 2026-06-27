@@ -27,8 +27,4 @@ export class CreateCommissionDto {
   @IsString({ message: 'O ID do cliente deve ser um texto válido' })
   @IsNotEmpty({ message: 'O ID do cliente é obrigatório' })
   clientId: string;
-
-  @IsString({ message: 'O ID do artista deve ser um texto válido' })
-  @IsNotEmpty({ message: 'O ID do artista é obrigatório' })
-  artistId: string;
 }
