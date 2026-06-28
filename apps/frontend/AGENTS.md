@@ -2,10 +2,10 @@
 
 ## Stack
 - React 19 + TypeScript 6
-- Vite 8
-- Tailwind CSS v4
+- Vite 8 + Tailwind CSS v4
 - React Router v7
-- Vitest + Testing Library
+- axios + @tanstack/react-query
+- Vitest + Testing Library (40 testes)
 
 ## Design Tokens (Tailwind `@theme`)
 Extraídos do Stitch — protótipo "CommissionTrack Landing Page" (light mode, minimalist + soft modern).
@@ -31,21 +31,36 @@ Extraídos do Stitch — protótipo "CommissionTrack Landing Page" (light mode, 
 }
 ```
 
+## Arquitetura
+```
+src/
+├── components/
+│   ├── ui/           # Button, Input, Card, StatusBadge, Loading
+│   └── layout/       # Header, AppLayout, ProtectedRoute
+├── pages/            # 9 telas (uma pasta cada)
+├── services/         # api.ts (axios + JWT interceptor)
+├── stores/           # AuthContext (AuthProvider + useAuth)
+├── types/            # api.ts (Role, CommissionStatus, User, etc.)
+```
+
 ## Telas (ID13 — 9 telas)
-| # | Tela | Rota | Role |
-|---|---|---|---|
-| 1 | **Login** | `/login` | Público |
-| 2 | **Cadastro** | `/cadastro` | Público |
-| 3 | **Landing Page** | `/` | Público |
-| 4 | **Painel do Artista** | `/artista/painel` | Artista |
-| 5 | **Gerenciar Clientes** | `/artista/clientes` | Artista |
-| 6 | **Detalhes da Comissão (Artista)** | `/artista/comissoes/:id` | Artista |
-| 7 | **Minhas Comissões** | `/cliente/comissoes` | Cliente |
-| 8 | **Nova Comissão** | `/cliente/nova` | Cliente |
-| 9 | **Detalhes da Comissão** | `/cliente/comissoes/:id` | Cliente |
+| # | Tela | Rota | Role | Status |
+|---|---|---|---|---|
+| 1 | **Login** | `/login` | Público | [ ] |
+| 2 | **Cadastro** | `/cadastro` | Público | [ ] |
+| 3 | **Landing Page** | `/` | Público | [ ] |
+| 4 | **Painel do Artista** | `/artista/painel` | Artista | [ ] |
+| 5 | **Gerenciar Clientes** | `/artista/clientes` | Artista | [ ] |
+| 6 | **Detalhes da Comissão (Artista)** | `/artista/comissoes/:id` | Artista | [ ] |
+| 7 | **Minhas Comissões** | `/cliente/comissoes` | Cliente | [ ] |
+| 8 | **Nova Comissão** | `/cliente/nova` | Cliente | [ ] |
+| 9 | **Detalhes da Comissão** | `/cliente/comissoes/:id` | Cliente | [ ] |
 
 ## Regras
 - TDD: test first, code second
 - Prefixo da API: `/api/v1`
-- npm run dev:web — inicia frontend
+- Rotas protegidas via ProtectedRoute + RolesGuard
+- npm run dev:web — inicia frontend (localhost:5173)
 - npm run test -w apps/frontend — roda testes
+- npm run build -w apps/frontend — valida TS + build
+- npm run lint -w apps/frontend — lint
