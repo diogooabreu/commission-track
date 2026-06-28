@@ -46,8 +46,8 @@ src/
 ## Telas (ID13 — 9 telas)
 | # | Tela | Rota | Role | Status |
 |---|---|---|---|---|
-| 1 | **Login** | `/login` | Público | [ ] |
-| 2 | **Cadastro** | `/cadastro` | Público | [ ] |
+| 1 | **Login** | `/login` | Público | [x] |
+| 2 | **Cadastro** | `/cadastro` | Público | [x] |
 | 3 | **Landing Page** | `/` | Público | [ ] |
 | 4 | **Painel do Artista** | `/artista/painel` | Artista | [ ] |
 | 5 | **Gerenciar Clientes** | `/artista/clientes` | Artista | [ ] |

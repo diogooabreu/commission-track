@@ -21,7 +21,7 @@ export class UsersService {
       return await this.prisma.user.create({ data: dto });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
-        throw new ConflictException('Registration failed');
+        throw new ConflictException('Email já cadastrado');
       }
       throw error;
     }

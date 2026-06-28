@@ -58,13 +58,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(async (data: RegisterRequest) => {
     setState(prev => ({ ...prev, isLoading: true }))
     try {
-      const { data: res } = await api.post<LoginResponse>('/auth/register', data)
-      localStorage.setItem('token', res.accessToken)
+      await api.post('/auth/register', data)
+
+      const { data: loginRes } = await api.post<LoginResponse>('/auth/login', {
+        email: data.email,
+        password: data.password,
+      })
+      localStorage.setItem('token', loginRes.accessToken)
 
       const { data: userRes } = await api.get<User>('/users/me')
       localStorage.setItem('user', JSON.stringify(userRes))
 
-      setState({ user: userRes, token: res.accessToken, isLoading: false })
+      setState({ user: userRes, token: loginRes.accessToken, isLoading: false })
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }))
       throw error

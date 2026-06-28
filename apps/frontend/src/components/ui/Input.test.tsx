@@ -39,7 +39,20 @@ describe('Input', () => {
 
   it('applies fullWidth class', () => {
     render(<Input label="Nome" id="name" fullWidth />)
-    const wrapper = screen.getByLabelText('Nome').parentElement
+    const input = screen.getByLabelText('Nome')
+    const wrapper = input.parentElement?.parentElement
     expect(wrapper?.className).toContain('w-full')
+  })
+
+  it('toggles password visibility', async () => {
+    render(<Input label="Senha" id="password" type="password" />)
+    const input = screen.getByLabelText('Senha')
+    expect(input).toHaveAttribute('type', 'password')
+
+    await userEvent.click(screen.getByRole('button', { name: /mostrar senha/i }))
+    expect(input).toHaveAttribute('type', 'text')
+
+    await userEvent.click(screen.getByRole('button', { name: /esconder senha/i }))
+    expect(input).toHaveAttribute('type', 'password')
   })
 })
