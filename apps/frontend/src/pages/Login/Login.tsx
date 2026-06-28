@@ -22,10 +22,24 @@ function validatePassword(password: string): string | undefined {
 }
 
 function getApiErrorMessage(error: unknown): string {
-  if (isAxiosError<ApiError>(error)) {
-    const msg = error.response?.data?.message
-    if (Array.isArray(msg)) return msg[0]
-    if (msg) return msg
+  if (isAxiosError(error)) {
+    if (!error.response) {
+      return 'Não foi possível conectar ao servidor. Verifique sua conexão.'
+    }
+    if (error.response.status === 502) {
+      return 'Servidor indisponível. Tente novamente.'
+    }
+    const data = error.response.data as ApiError | undefined
+    const msg = data?.message
+    if (Array.isArray(msg)) {
+      if (msg[0] === 'Invalid credentials') return 'Email ou senha incorretos'
+      return msg[0]
+    }
+    if (msg) {
+      if (msg === 'Invalid credentials') return 'Email ou senha incorretos'
+      return msg
+    }
+    return 'Erro inesperado. Tente novamente.'
   }
   if (error instanceof Error) return error.message
   return 'Erro ao fazer login'
