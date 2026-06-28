@@ -97,6 +97,10 @@ describe('CommissionsService', () => {
   });
 
   describe('findAll', () => {
+    const include = {
+      client: { select: { id: true, name: true, email: true } },
+    };
+
     it('should return all commissions for ARTIST', async () => {
       const expected = [{ id: 'uuid-1', title: 'Portrait' }];
       mockPrisma.commission.findMany.mockResolvedValue(expected);
@@ -105,6 +109,7 @@ describe('CommissionsService', () => {
 
       expect(mockPrisma.commission.findMany).toHaveBeenCalledWith({
         where: { artistId: 'artist-uuid' },
+        include,
       });
       expect(result).toEqual(expected);
     });
@@ -119,6 +124,7 @@ describe('CommissionsService', () => {
 
       expect(mockPrisma.commission.findMany).toHaveBeenCalledWith({
         where: { clientId: 'client-uuid' },
+        include,
       });
       expect(result).toEqual(expected);
     });
