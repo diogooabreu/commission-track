@@ -65,6 +65,6 @@ export class UsersController {
   @Roles(Role.ARTIST)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    await this.usersService.remove(id);
+    return this.usersService.remove(id);
   }
 }

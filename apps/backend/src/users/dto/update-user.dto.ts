@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsOptional,
   MinLength,
+  MaxLength,
   Matches,
 } from 'class-validator';
 import { Role } from './create-user.dto';
@@ -12,10 +13,12 @@ import { Role } from './create-user.dto';
 export class UpdateUserDto {
   @IsString({ message: 'O nome deve ser um texto válido' })
   @IsNotEmpty({ message: 'O nome não pode ficar vazio' })
+  @MaxLength(100, { message: 'O nome deve ter no máximo 100 caracteres' })
   @IsOptional()
   name?: string;
 
   @IsEmail({}, { message: 'Informe um e-mail válido' })
+  @MaxLength(255, { message: 'O e-mail deve ter no máximo 255 caracteres' })
   @IsOptional()
   email?: string;
 

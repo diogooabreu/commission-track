@@ -145,9 +145,14 @@ describe('UsersController', () => {
   });
 
   describe('remove', () => {
-    it('should delete a user', async () => {
-      await controller.remove('uuid-1');
+    it('should delete a user and return it', async () => {
+      const expected = { id: 'uuid-1' };
+      mockService.remove.mockResolvedValue(expected);
+
+      const result = await controller.remove('uuid-1');
+
       expect(mockService.remove).toHaveBeenCalledWith('uuid-1');
+      expect(result).toEqual(expected);
     });
   });
 });

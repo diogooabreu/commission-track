@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Status } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -16,6 +17,7 @@ export class CommissionsService {
       description: string;
       price: number;
       clientId: string;
+      deadline?: string;
     },
     artistId: string,
   ) {
@@ -23,6 +25,8 @@ export class CommissionsService {
       where: { id: dto.clientId },
     });
     if (!client) throw new NotFoundException('Client not found');
+    if (client.role !== 'CLIENT')
+      throw new BadRequestException('Client must have CLIENT role');
 
     const artist = await this.prisma.user.findUnique({
       where: { id: artistId },
@@ -38,7 +42,9 @@ export class CommissionsService {
         where: { clientId: userId },
       });
     }
-    return this.prisma.commission.findMany();
+    return this.prisma.commission.findMany({
+      where: { artistId: userId },
+    });
   }
 
   async findOne(id: string, userId: string, role: string) {
@@ -46,12 +52,20 @@ export class CommissionsService {
     if (role === 'CLIENT' && commission.clientId !== userId) {
       throw new NotFoundException('Commission not found');
     }
+    if (role === 'ARTIST' && commission.artistId !== userId) {
+      throw new NotFoundException('Commission not found');
+    }
     return commission;
   }
 
   async update(
     id: string,
-    dto: Partial<{ title: string; description: string; price: number }>,
+    dto: Partial<{
+      title: string;
+      description: string;
+      price: number;
+      deadline: string;
+    }>,
     userId: string,
   ) {
     const commission = await this.findById(id);

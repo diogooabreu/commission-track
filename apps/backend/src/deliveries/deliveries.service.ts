@@ -34,6 +34,9 @@ export class DeliveriesService {
     if (role === 'CLIENT' && commission.clientId !== userId) {
       throw new NotFoundException('Commission not found');
     }
+    if (role === 'ARTIST' && commission.artistId !== userId) {
+      throw new NotFoundException('Commission not found');
+    }
 
     return this.prisma.delivery.findMany({ where: { commissionId } });
   }

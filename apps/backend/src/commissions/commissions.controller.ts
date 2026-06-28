@@ -76,6 +76,6 @@ export class CommissionsController {
   @Delete(':id')
   async remove(@Req() req: Request, @Param('id') id: string) {
     const user = req.user as { id: string };
-    await this.commissionsService.remove(id, user.id);
+    return this.commissionsService.remove(id, user.id);
   }
 }

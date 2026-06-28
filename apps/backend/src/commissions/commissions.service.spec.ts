@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CommissionsService } from './commissions.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -42,8 +46,14 @@ describe('CommissionsService', () => {
     const artistId = 'artist-uuid';
 
     it('should create a commission', async () => {
-      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'client-uuid' });
-      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'artist-uuid' });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'client-uuid',
+        role: 'CLIENT',
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'artist-uuid',
+        role: 'ARTIST',
+      });
       const expected = { id: 'uuid-1', ...dto, artistId, status: 'PENDING' };
       mockPrisma.commission.create.mockResolvedValue(expected);
 
@@ -51,7 +61,23 @@ describe('CommissionsService', () => {
       expect(result).toEqual(expected);
     });
 
+    it('should throw BadRequestException when client role is not CLIENT', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'client-uuid',
+        role: 'ARTIST',
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'artist-uuid',
+        role: 'ARTIST',
+      });
+
+      await expect(service.create(dto, artistId)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
     it('should throw NotFoundException when client does not exist', async () => {
+      mockPrisma.user.findUnique.mockReset();
       mockPrisma.user.findUnique.mockResolvedValue(null);
       await expect(service.create(dto, artistId)).rejects.toThrow(
         NotFoundException,
@@ -59,7 +85,10 @@ describe('CommissionsService', () => {
     });
 
     it('should throw NotFoundException when artist does not exist', async () => {
-      mockPrisma.user.findUnique.mockResolvedValueOnce({ id: 'client-uuid' });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'client-uuid',
+        role: 'CLIENT',
+      });
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       await expect(service.create(dto, artistId)).rejects.toThrow(
         NotFoundException,
@@ -74,7 +103,9 @@ describe('CommissionsService', () => {
 
       const result = await service.findAll('artist-uuid', 'ARTIST');
 
-      expect(mockPrisma.commission.findMany).toHaveBeenCalledWith();
+      expect(mockPrisma.commission.findMany).toHaveBeenCalledWith({
+        where: { artistId: 'artist-uuid' },
+      });
       expect(result).toEqual(expected);
     });
 
@@ -95,7 +126,11 @@ describe('CommissionsService', () => {
 
   describe('findOne', () => {
     it('should return a commission by id for ARTIST', async () => {
-      const expected = { id: 'uuid-1', title: 'Portrait' };
+      const expected = {
+        id: 'uuid-1',
+        title: 'Portrait',
+        artistId: 'artist-uuid',
+      };
       mockPrisma.commission.findUnique.mockResolvedValue(expected);
 
       const result = await service.findOne('uuid-1', 'artist-uuid', 'ARTIST');
