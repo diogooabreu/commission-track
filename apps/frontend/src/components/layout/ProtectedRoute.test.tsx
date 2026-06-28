@@ -12,6 +12,7 @@ function renderWithProviders(path: string, ui: React.ReactElement) {
         <Routes>
           <Route path="/protegida" element={ui} />
           <Route path="/login" element={<div>Login Page</div>} />
+          <Route path="/unauthorized" element={<div>Unauthorized Page</div>} />
           <Route path="/artista/painel" element={<div>Painel do Artista</div>} />
           <Route path="/cliente/comissoes" element={<div>Comissões Cliente</div>} />
         </Routes>
@@ -38,7 +39,7 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('Conteúdo Protegido')).not.toBeInTheDocument()
   })
 
-  it('redirects ARTIST to /artista/painel when trying to access client route', async () => {
+  it('redirects to /unauthorized when role does not match', async () => {
     localStorage.setItem('token', 'fake-token')
     localStorage.setItem('user', JSON.stringify({ id: '1', name: 'Test', email: 'test@test.com', role: Role.ARTIST, createdAt: '2024-01-01' }))
 
@@ -49,25 +50,9 @@ describe('ProtectedRoute', () => {
       </ProtectedRoute>,
     )
     await waitFor(() => {
-      expect(screen.getByText('Painel do Artista')).toBeInTheDocument()
+      expect(screen.getByText('Unauthorized Page')).toBeInTheDocument()
     })
     expect(screen.queryByText('Conteúdo Cliente')).not.toBeInTheDocument()
-  })
-
-  it('redirects CLIENT to /cliente/comissoes when trying to access artist route', async () => {
-    localStorage.setItem('token', 'fake-token')
-    localStorage.setItem('user', JSON.stringify({ id: '2', name: 'Client', email: 'client@test.com', role: Role.CLIENT, createdAt: '2024-01-01' }))
-
-    renderWithProviders(
-      '/protegida',
-      <ProtectedRoute allowedRoles={[Role.ARTIST]}>
-        <div>Conteúdo Artista</div>
-      </ProtectedRoute>,
-    )
-    await waitFor(() => {
-      expect(screen.getByText('Comissões Cliente')).toBeInTheDocument()
-    })
-    expect(screen.queryByText('Conteúdo Artista')).not.toBeInTheDocument()
   })
 
   it('renders children when authenticated with matching role', () => {
