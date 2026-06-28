@@ -21,7 +21,7 @@ export class UsersService {
       return await this.prisma.user.create({ data: dto });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
-        throw new ConflictException('Email already exists');
+        throw new ConflictException('Registration failed');
       }
       throw error;
     }
@@ -68,7 +68,7 @@ export class UsersService {
       });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
-        throw new ConflictException('Email already exists');
+        throw new ConflictException('Update failed');
       }
       throw error;
     }

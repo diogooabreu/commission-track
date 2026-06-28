@@ -146,14 +146,19 @@ describe('CommissionsController', () => {
   });
 
   describe('remove', () => {
-    it('should call service.remove with id and userId', async () => {
+    it('should call service.remove with id and userId and return result', async () => {
       const user = { id: 'artist-uuid' };
       const req = { user };
-      mockService.remove.mockResolvedValue(undefined);
+      const expected = { id: 'uuid-1' };
+      mockService.remove.mockResolvedValue(expected);
 
-      await controller.remove(req as unknown as Request, 'uuid-1');
+      const result = await controller.remove(
+        req as unknown as Request,
+        'uuid-1',
+      );
 
       expect(mockService.remove).toHaveBeenCalledWith('uuid-1', 'artist-uuid');
+      expect(result).toEqual(expected);
     });
   });
 });

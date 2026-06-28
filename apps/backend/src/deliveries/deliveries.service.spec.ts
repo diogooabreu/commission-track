@@ -74,6 +74,7 @@ describe('DeliveriesService', () => {
       mockPrisma.commission.findUnique.mockResolvedValue({
         id: 'comm-uuid',
         clientId: 'client-uuid',
+        artistId: 'artist-uuid',
       });
       mockPrisma.delivery.findMany.mockResolvedValue(expected);
 
