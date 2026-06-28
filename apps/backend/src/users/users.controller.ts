@@ -30,8 +30,7 @@ export class UsersController {
     return req.user;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ARTIST)
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();

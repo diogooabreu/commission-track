@@ -16,24 +16,46 @@ export class CommissionsService {
       title: string;
       description: string;
       price: number;
-      clientId: string;
+      clientId?: string;
+      artistId?: string;
       deadline?: string;
     },
-    artistId: string,
+    userId: string,
+    role: string,
   ) {
-    const client = await this.prisma.user.findUnique({
-      where: { id: dto.clientId },
-    });
-    if (!client) throw new NotFoundException('Client not found');
-    if (client.role !== 'CLIENT')
-      throw new BadRequestException('Client must have CLIENT role');
+    let clientId: string;
+    let artistId: string;
 
-    const artist = await this.prisma.user.findUnique({
-      where: { id: artistId },
-    });
-    if (!artist) throw new NotFoundException('Artist not found');
+    if (role === 'CLIENT') {
+      clientId = userId;
+      artistId = dto.artistId!;
+      if (!artistId) throw new BadRequestException('Artist ID is required');
+      const artist = await this.prisma.user.findUnique({
+        where: { id: artistId },
+      });
+      if (!artist) throw new NotFoundException('Artist not found');
+    } else {
+      clientId = dto.clientId!;
+      if (!clientId) throw new BadRequestException('Client ID is required');
+      artistId = userId;
+      const client = await this.prisma.user.findUnique({
+        where: { id: clientId },
+      });
+      if (!client) throw new NotFoundException('Client not found');
+      if (client.role !== 'CLIENT')
+        throw new BadRequestException('Client must have CLIENT role');
+    }
 
-    return this.prisma.commission.create({ data: { ...dto, artistId } });
+    return this.prisma.commission.create({
+      data: {
+        title: dto.title,
+        description: dto.description,
+        price: dto.price,
+        deadline: dto.deadline,
+        clientId,
+        artistId,
+      },
+    });
   }
 
   async findAll(userId: string, role: string) {
@@ -104,6 +126,7 @@ export class CommissionsService {
       where: { id },
       include: {
         client: { select: { id: true, name: true, email: true } },
+        artist: { select: { id: true, name: true, email: true } },
       },
     });
     if (!commission) throw new NotFoundException('Commission not found');

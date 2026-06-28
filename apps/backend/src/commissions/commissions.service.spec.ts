@@ -37,7 +37,7 @@ describe('CommissionsService', () => {
   afterEach(() => jest.clearAllMocks());
 
   describe('create', () => {
-    const dto = {
+    const artistDto = {
       title: 'Portrait',
       description: 'Digital art',
       price: 150,
@@ -45,54 +45,91 @@ describe('CommissionsService', () => {
     };
     const artistId = 'artist-uuid';
 
-    it('should create a commission', async () => {
+    it('should create a commission as ARTIST', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
         id: 'client-uuid',
         role: 'CLIENT',
       });
-      mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'artist-uuid',
-        role: 'ARTIST',
-      });
-      const expected = { id: 'uuid-1', ...dto, artistId, status: 'PENDING' };
+      const expected = {
+        id: 'uuid-1',
+        ...artistDto,
+        artistId,
+        status: 'PENDING',
+      };
       mockPrisma.commission.create.mockResolvedValue(expected);
 
-      const result = await service.create(dto, artistId);
+      const result = await service.create(artistDto, artistId, 'ARTIST');
       expect(result).toEqual(expected);
     });
 
-    it('should throw BadRequestException when client role is not CLIENT', async () => {
+    it('should throw BadRequestException when client role is not CLIENT (ARTIST create)', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce({
         id: 'client-uuid',
         role: 'ARTIST',
       });
+
+      await expect(
+        service.create(artistDto, artistId, 'ARTIST'),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw NotFoundException when client does not exist (ARTIST create)', async () => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      await expect(
+        service.create(artistDto, artistId, 'ARTIST'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should create a commission as CLIENT', async () => {
+      const clientDto = {
+        title: 'Portrait',
+        description: 'Digital art',
+        price: 150,
+        artistId: 'artist-uuid',
+      };
+      const clientUserId = 'client-uuid';
       mockPrisma.user.findUnique.mockResolvedValueOnce({
         id: 'artist-uuid',
         role: 'ARTIST',
       });
+      const expected = {
+        id: 'uuid-1',
+        title: 'Portrait',
+        description: 'Digital art',
+        price: 150,
+        clientId: clientUserId,
+        artistId: 'artist-uuid',
+        status: 'PENDING',
+      };
+      mockPrisma.commission.create.mockResolvedValue(expected);
 
-      await expect(service.create(dto, artistId)).rejects.toThrow(
-        BadRequestException,
-      );
+      const result = await service.create(clientDto, clientUserId, 'CLIENT');
+      expect(result).toEqual(expected);
     });
 
-    it('should throw NotFoundException when client does not exist', async () => {
-      mockPrisma.user.findUnique.mockReset();
-      mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.create(dto, artistId)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw NotFoundException when artist does not exist', async () => {
-      mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'client-uuid',
-        role: 'CLIENT',
-      });
+    it('should throw NotFoundException when artist does not exist (CLIENT create)', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-      await expect(service.create(dto, artistId)).rejects.toThrow(
-        NotFoundException,
-      );
+      const clientDto = {
+        title: 'Portrait',
+        description: 'Digital art',
+        price: 150,
+        artistId: 'nonexistent-artist',
+      };
+
+      await expect(
+        service.create(clientDto, 'client-uuid', 'CLIENT'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw BadRequestException when CLIENT does not provide artistId', async () => {
+      await expect(
+        service.create(
+          { title: 'Portrait', description: 'Art', price: 100 },
+          'client-uuid',
+          'CLIENT',
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
