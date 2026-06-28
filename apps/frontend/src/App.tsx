@@ -7,6 +7,8 @@ import { Role } from './types/api'
 import { Landing } from './pages/Landing/Landing'
 import { Login } from './pages/Login/Login'
 import { Cadastro } from './pages/Cadastro/Cadastro'
+import { NotFound } from './pages/NotFound/NotFound'
+import { Unauthorized } from './pages/Unauthorized/Unauthorized'
 import { ArtistaPainel } from './pages/ArtistaPainel/ArtistaPainel'
 import { ArtistaClientes } from './pages/ArtistaClientes/ArtistaClientes'
 import { ArtistaComissaoDetalhes } from './pages/ArtistaComissaoDetalhes/ArtistaComissaoDetalhes'
@@ -23,6 +25,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
             <Route element={<ProtectedRoute allowedRoles={[Role.ARTIST]} />}>
               <Route path="/artista/painel" element={<ArtistaPainel />} />
@@ -35,6 +38,8 @@ function App() {
               <Route path="/cliente/nova" element={<ClienteNovaComissao />} />
               <Route path="/cliente/comissoes/:id" element={<ClienteComissaoDetalhes />} />
             </Route>
+
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </AuthProvider>
