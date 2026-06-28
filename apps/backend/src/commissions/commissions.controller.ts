@@ -28,11 +28,11 @@ export class CommissionsController {
   constructor(private readonly commissionsService: CommissionsService) {}
 
   @UseGuards(RolesGuard)
-  @Roles(Role.ARTIST)
+  @Roles(Role.ARTIST, Role.CLIENT)
   @Post()
   create(@Req() req: Request, @Body() dto: CreateCommissionDto) {
-    const user = req.user as { id: string };
-    return this.commissionsService.create(dto, user.id);
+    const user = req.user as { id: string; role: string };
+    return this.commissionsService.create(dto, user.id, user.role);
   }
 
   @Get()

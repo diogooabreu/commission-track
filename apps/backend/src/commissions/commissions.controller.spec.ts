@@ -42,8 +42,8 @@ describe('CommissionsController', () => {
   });
 
   describe('create', () => {
-    it('should call service.create with DTO and authenticated artist', async () => {
-      const user = { id: 'artist-uuid' };
+    it('should call service.create with DTO, userId and role for ARTIST', async () => {
+      const user = { id: 'artist-uuid', role: 'ARTIST' };
       const req = { user };
       const dto = {
         title: 'Portrait',
@@ -56,7 +56,11 @@ describe('CommissionsController', () => {
 
       const result = await controller.create(req as unknown as Request, dto);
 
-      expect(mockService.create).toHaveBeenCalledWith(dto, 'artist-uuid');
+      expect(mockService.create).toHaveBeenCalledWith(
+        dto,
+        'artist-uuid',
+        'ARTIST',
+      );
       expect(result).toEqual(expected);
     });
   });

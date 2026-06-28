@@ -73,7 +73,8 @@ export interface CreateCommissionRequest {
   description: string;
   price: number;
   deadline?: string;
-  clientId: string;
+  clientId?: string;
+  artistId?: string;
 }
 
 export interface UpdateCommissionRequest {

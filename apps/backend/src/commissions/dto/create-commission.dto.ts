@@ -33,6 +33,10 @@ export class CreateCommissionDto {
   deadline?: string;
 
   @IsUUID('4', { message: 'O ID do cliente deve ser um UUID válido' })
-  @IsNotEmpty({ message: 'O ID do cliente é obrigatório' })
-  clientId: string;
+  @IsOptional()
+  clientId?: string;
+
+  @IsUUID('4', { message: 'O ID do artista deve ser um UUID válido' })
+  @IsOptional()
+  artistId?: string;
 }
