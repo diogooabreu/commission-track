@@ -37,13 +37,18 @@ export class CommissionsService {
   }
 
   async findAll(userId: string, role: string) {
+    const include = {
+      client: { select: { id: true, name: true, email: true } },
+    };
     if (role === 'CLIENT') {
       return this.prisma.commission.findMany({
         where: { clientId: userId },
+        include,
       });
     }
     return this.prisma.commission.findMany({
       where: { artistId: userId },
+      include,
     });
   }
 
@@ -97,6 +102,9 @@ export class CommissionsService {
   private async findById(id: string) {
     const commission = await this.prisma.commission.findUnique({
       where: { id },
+      include: {
+        client: { select: { id: true, name: true, email: true } },
+      },
     });
     if (!commission) throw new NotFoundException('Commission not found');
     return commission;
