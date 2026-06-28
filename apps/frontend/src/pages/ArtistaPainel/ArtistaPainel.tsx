@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { CommissionStatus } from '../../types/api'
 import type { Commission } from '../../types/api'
 
-function getErrorMessage(error: unknown): string {
+function getErrorMessage(): string {
   return 'Erro ao carregar comissões. Tente novamente.'
 }
 
@@ -23,22 +23,21 @@ export function ArtistaPainel() {
   const [apiError, setApiError] = useState('')
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
-  const fetchCommissions = useCallback(async () => {
-    setIsLoading(true)
-    setApiError('')
-    try {
-      const { data } = await api.get<Commission[]>('/commissions')
-      setCommissions(data)
-    } catch {
-      setApiError(getErrorMessage)
-    } finally {
-      setIsLoading(false)
-    }
+  useEffect(() => {
+    api.get<Commission[]>('/commissions')
+      .then(({ data }) => setCommissions(data))
+      .catch(() => setApiError(getErrorMessage()))
+      .finally(() => setIsLoading(false))
   }, [])
 
-  useEffect(() => {
-    fetchCommissions()
-  }, [fetchCommissions])
+  function handleRetry() {
+    setIsLoading(true)
+    setApiError('')
+    api.get<Commission[]>('/commissions')
+      .then(({ data }) => setCommissions(data))
+      .catch(() => setApiError(getErrorMessage()))
+      .finally(() => setIsLoading(false))
+  }
 
   async function handleStatusChange(id: string, status: CommissionStatus) {
     setUpdatingId(id)
@@ -73,7 +72,7 @@ export function ArtistaPainel() {
         </div>
         <button
           type="button"
-          onClick={fetchCommissions}
+          onClick={handleRetry}
           className="mt-4 cursor-pointer rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white hover:brightness-90"
         >
           Tentar novamente
