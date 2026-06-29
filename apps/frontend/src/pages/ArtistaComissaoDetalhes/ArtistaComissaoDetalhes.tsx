@@ -155,25 +155,56 @@ export function ArtistaComissaoDetalhes() {
         </div>
 
         <div className="border-t border-[#e5e4e7] pt-4">
-          <label
-            htmlFor="status-select"
-            className="text-xs text-tertiary uppercase tracking-wide block mb-2"
-          >
-            Status
-          </label>
-          <select
-            id="status-select"
-            value={commission.status}
-            onChange={(e) => handleStatusChange(e.target.value as CommissionStatus)}
-            disabled={updating}
-            className="rounded-sm border border-[#e5e4e7] bg-surface px-3 py-2 text-sm text-on-surface focus:outline-2 focus:outline-offset-1 focus:outline-primary"
-          >
-            <option value={CommissionStatus.PENDING}>Pendente</option>
-            <option value={CommissionStatus.IN_PROGRESS}>Em andamento</option>
-            <option value={CommissionStatus.WAITING_PAYMENT}>Aguardando pagamento</option>
-            <option value={CommissionStatus.COMPLETED}>Concluído</option>
-            <option value={CommissionStatus.CANCELLED}>Cancelado</option>
-          </select>
+          {commission.status === CommissionStatus.PENDING ? (
+            <div className="space-y-3">
+              <p className="text-xs text-tertiary uppercase tracking-wide">
+                Responder
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleStatusChange(CommissionStatus.IN_PROGRESS)}
+                  disabled={updating}
+                  className="cursor-pointer rounded-sm bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:brightness-90 disabled:opacity-50"
+                >
+                  {updating ? 'Aceitando...' : 'Aceitar'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Tem certeza que deseja recusar esta comissão?')) {
+                      handleStatusChange(CommissionStatus.CANCELLED)
+                    }
+                  }}
+                  disabled={updating}
+                  className="cursor-pointer rounded-sm bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:brightness-90 disabled:opacity-50"
+                >
+                  Recusar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <label
+                htmlFor="status-select"
+                className="text-xs text-tertiary uppercase tracking-wide block mb-2"
+              >
+                Status
+              </label>
+              <select
+                id="status-select"
+                value={commission.status}
+                onChange={(e) => handleStatusChange(e.target.value as CommissionStatus)}
+                disabled={updating}
+                className="rounded-sm border border-[#e5e4e7] bg-surface px-3 py-2 text-sm text-on-surface focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+              >
+                <option value={CommissionStatus.IN_PROGRESS}>Em andamento</option>
+                <option value={CommissionStatus.WAITING_PAYMENT}>Aguardando pagamento</option>
+                <option value={CommissionStatus.COMPLETED}>Concluído</option>
+                <option value={CommissionStatus.CANCELLED}>Cancelado</option>
+              </select>
+            </>
+          )}
         </div>
       </div>
 

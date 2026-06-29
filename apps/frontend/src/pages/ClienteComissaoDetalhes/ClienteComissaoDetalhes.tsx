@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../../services/api'
 import { StatusBadge } from '../../components/ui/StatusBadge'
-import type { Commission, Delivery } from '../../types/api'
+import { CommissionStatus, type Commission, type Delivery } from '../../types/api'
 
 export function ClienteComissaoDetalhes() {
   const { id } = useParams<{ id: string }>()
@@ -81,6 +81,32 @@ export function ClienteComissaoDetalhes() {
         <p className="text-sm text-tertiary leading-relaxed mb-6">
           {commission.description}
         </p>
+
+        {commission.status === CommissionStatus.PENDING && (
+          <div className="mb-4 rounded-sm bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-800">
+            Aguardando resposta do artista...
+          </div>
+        )}
+        {commission.status === CommissionStatus.CANCELLED && (
+          <div className="mb-4 rounded-sm bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            Comissão recusada pelo artista.
+          </div>
+        )}
+        {commission.status === CommissionStatus.IN_PROGRESS && (
+          <div className="mb-4 rounded-sm bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+            Comissão aceita! O artista já começou a produzir.
+          </div>
+        )}
+        {commission.status === CommissionStatus.WAITING_PAYMENT && (
+          <div className="mb-4 rounded-sm bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-800">
+            Aguardando pagamento...
+          </div>
+        )}
+        {commission.status === CommissionStatus.COMPLETED && (
+          <div className="mb-4 rounded-sm bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+            Comissão concluída!
+          </div>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2 mb-6">
           <div>

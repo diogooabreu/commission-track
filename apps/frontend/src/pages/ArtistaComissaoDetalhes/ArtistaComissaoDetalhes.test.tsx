@@ -72,7 +72,7 @@ describe('ArtistaComissaoDetalhes', () => {
     expect(screen.getAllByText('Pendente').length).toBeGreaterThanOrEqual(1)
   })
 
-  it('shows status select', async () => {
+  it('shows accept and refuse buttons when commission is PENDING', async () => {
     mock = new MockAdapter(api)
     mock.onGet('/commissions/1').reply(200, commission)
     mock.onGet('/deliveries/1').reply(200, deliveries)
@@ -80,8 +80,33 @@ describe('ArtistaComissaoDetalhes', () => {
     renderPage()
 
     await waitFor(() => {
+      expect(screen.getByText('Retrato Digital')).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('button', { name: /aceitar/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /recusar/i })).toBeInTheDocument()
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+  })
+
+  it('hides accept/refuse and shows status select after accepting', async () => {
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, commission)
+    mock.onGet('/deliveries/1').reply(200, deliveries)
+    mock.onPatch('/commissions/1/status').reply(200)
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText('Retrato Digital')).toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: /aceitar/i }))
+
+    await waitFor(() => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
     })
+    expect(screen.queryByRole('button', { name: /aceitar/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /recusar/i })).not.toBeInTheDocument()
   })
 
   it('shows error message on API failure', async () => {
