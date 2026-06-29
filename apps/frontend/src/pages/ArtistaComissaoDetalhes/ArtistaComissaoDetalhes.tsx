@@ -12,6 +12,10 @@ export function ArtistaComissaoDetalhes() {
   const [isLoading, setIsLoading] = useState(true)
   const [apiError, setApiError] = useState('')
   const [updating, setUpdating] = useState(false)
+  const [deliveryFileUrl, setDeliveryFileUrl] = useState('')
+  const [deliveryNotes, setDeliveryNotes] = useState('')
+  const [isAddingDelivery, setIsAddingDelivery] = useState(false)
+  const [deliveryError, setDeliveryError] = useState('')
 
   useEffect(() => {
     if (!id) return
@@ -46,6 +50,28 @@ export function ArtistaComissaoDetalhes() {
       setApiError('Erro ao atualizar status.')
     } finally {
       setUpdating(false)
+    }
+  }
+
+  async function handleAddDelivery(e: React.FormEvent) {
+    e.preventDefault()
+    if (!id || !deliveryFileUrl.trim()) return
+    setIsAddingDelivery(true)
+    setDeliveryError('')
+
+    try {
+      const { data } = await api.post<Delivery>('/deliveries', {
+        fileUrl: deliveryFileUrl.trim(),
+        notes: deliveryNotes.trim() || undefined,
+        commissionId: id,
+      })
+      setDeliveries(prev => [...prev, data])
+      setDeliveryFileUrl('')
+      setDeliveryNotes('')
+    } catch {
+      setDeliveryError('Erro ao adicionar entrega.')
+    } finally {
+      setIsAddingDelivery(false)
     }
   }
 
@@ -156,6 +182,36 @@ export function ArtistaComissaoDetalhes() {
           Entregas
         </h2>
 
+        <form
+          onSubmit={handleAddDelivery}
+          className="mb-6 rounded-sm border border-[#e5e4e7] bg-surface p-4 shadow-card space-y-3"
+        >
+          <input
+            type="text"
+            placeholder="URL do arquivo (obrigatório)"
+            value={deliveryFileUrl}
+            onChange={(e) => setDeliveryFileUrl(e.target.value)}
+            className="w-full rounded-sm border border-[#e5e4e7] bg-surface px-4 py-2 text-sm text-on-surface placeholder-tertiary focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+          />
+          <input
+            type="text"
+            placeholder="Observações (opcional)"
+            value={deliveryNotes}
+            onChange={(e) => setDeliveryNotes(e.target.value)}
+            className="w-full rounded-sm border border-[#e5e4e7] bg-surface px-4 py-2 text-sm text-on-surface placeholder-tertiary focus:outline-2 focus:outline-offset-1 focus:outline-primary"
+          />
+          {deliveryError && (
+            <p className="text-xs text-red-600">{deliveryError}</p>
+          )}
+          <button
+            type="submit"
+            disabled={isAddingDelivery || !deliveryFileUrl.trim()}
+            className="cursor-pointer rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-white hover:brightness-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isAddingDelivery ? 'Adicionando...' : 'Adicionar Entrega'}
+          </button>
+        </form>
+
         {deliveries.length === 0 ? (
           <div className="rounded-sm border border-[#e5e4e7] bg-surface p-8 text-center">
             <p className="text-tertiary">Nenhuma entrega realizada ainda.</p>
@@ -168,7 +224,19 @@ export function ArtistaComissaoDetalhes() {
                 className="rounded-sm border border-[#e5e4e7] bg-surface p-4 shadow-card"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-on-surface">{delivery.notes}</span>
+                  <div>
+                    <a
+                      href={delivery.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-primary no-underline hover:underline"
+                    >
+                      Ver arquivo
+                    </a>
+                    {delivery.notes && (
+                      <p className="mt-1 text-sm text-tertiary">{delivery.notes}</p>
+                    )}
+                  </div>
                   <p className="text-xs text-tertiary">
                     {new Date(delivery.createdAt).toLocaleDateString('pt-BR')}
                   </p>

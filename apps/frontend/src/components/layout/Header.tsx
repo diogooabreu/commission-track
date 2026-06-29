@@ -63,7 +63,12 @@ export function Header() {
                 </Link>
               )}
 
-              <span className="text-sm text-tertiary">{user.name}</span>
+              <Link
+                to="/perfil"
+                className="text-sm font-medium text-tertiary no-underline hover:text-on-surface transition-colors"
+              >
+                {user.name}
+              </Link>
               <button
                 type="button"
                 onClick={handleLogout}
