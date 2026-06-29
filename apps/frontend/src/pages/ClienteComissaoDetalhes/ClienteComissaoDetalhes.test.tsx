@@ -104,4 +104,44 @@ describe('ClienteComissaoDetalhes', () => {
       expect(screen.getByText(/Nenhuma entrega/i)).toBeInTheDocument()
     })
   })
+
+  it('shows waiting message when commission is PENDING', async () => {
+    const pendingCommission = { ...commission, status: CommissionStatus.PENDING }
+
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, pendingCommission)
+    mock.onGet('/deliveries/1').reply(200, [])
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText(/aguardando resposta/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows refused message when commission is CANCELLED', async () => {
+    const cancelledCommission = { ...commission, status: CommissionStatus.CANCELLED }
+
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, cancelledCommission)
+    mock.onGet('/deliveries/1').reply(200, [])
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText(/recusada/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows accepted message when commission is IN_PROGRESS', async () => {
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, commission)
+    mock.onGet('/deliveries/1').reply(200, deliveries)
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText(/aceita/i)).toBeInTheDocument()
+    })
+  })
 })
