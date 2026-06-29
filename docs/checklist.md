@@ -285,10 +285,14 @@ Materializar requisitos em UI.
 
 Checklist:
 
-* [ ] Tela login
-* [ ] Tela dashboard
-* [ ] Tela commissions
-* [ ] Tela deliveries
+* [x] Tela login + cadastro
+* [x] Tela landing page, 404, unauthorized
+* [x] Tela dashboard (painel artista)
+* [x] Tela gerenciar clientes (artista)
+* [x] Tela detalhes comissão (artista)
+* [x] Tela minhas comissões (cliente)
+* [x] Tela nova comissão (cliente)
+* [x] Tela detalhes comissão (cliente)
 
 Evidência:
 
@@ -306,10 +310,10 @@ Consumir dados autenticados via JWT.
 
 Checklist:
 
-* [ ] Integração login
-* [ ] Token armazenado corretamente
-* [ ] Requests autenticados
-* [ ] Proteção de rotas frontend
+* [x] Integração login + cadastro
+* [x] Token armazenado corretamente (localStorage)
+* [x] Requests autenticados (JWT interceptor)
+* [x] Proteção de rotas frontend (ProtectedRoute + role check)
 
 Evidência:
 
