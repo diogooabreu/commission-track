@@ -94,6 +94,36 @@ describe('UsersService', () => {
     });
   });
 
+  describe('findArtistClients', () => {
+    it('should return only CLIENT users with commissions for the artist', async () => {
+      const artistId = 'artist-uuid';
+      const expected = [
+        { id: 'client-1', name: 'Maria', role: 'CLIENT' },
+        { id: 'client-2', name: 'João', role: 'CLIENT' },
+      ];
+      mockPrisma.user.findMany.mockResolvedValue(expected);
+
+      const result = await service.findArtistClients(artistId);
+
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
+        where: {
+          role: 'CLIENT',
+          commissionsAsClient: { some: { artistId } },
+        },
+        omit: { password: true },
+      });
+      expect(result).toEqual(expected);
+    });
+
+    it('should return empty array when no clients have commissions', async () => {
+      mockPrisma.user.findMany.mockResolvedValue([]);
+
+      const result = await service.findArtistClients('artist-uuid');
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('findOne', () => {
     it('should return a user by id without password', async () => {
       const expected = { id: 'uuid-1', name: 'John' };

@@ -12,6 +12,7 @@ describe('UsersController', () => {
   const mockService = {
     findAll: jest.fn(),
     findOne: jest.fn(),
+    findArtistClients: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
   };
@@ -45,6 +46,20 @@ describe('UsersController', () => {
       mockService.findAll.mockResolvedValue(expected);
 
       const result = await controller.findAll();
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('findClients', () => {
+    it('should call service.findArtistClients with the authenticated user id', async () => {
+      const user = { id: 'artist-uuid', role: 'ARTIST' };
+      const req = { user };
+      const expected = [{ id: 'client-1', name: 'Maria' }];
+      mockService.findArtistClients.mockResolvedValue(expected);
+
+      const result = await controller.findClients(req as unknown as Request);
+
+      expect(mockService.findArtistClients).toHaveBeenCalledWith('artist-uuid');
       expect(result).toEqual(expected);
     });
   });

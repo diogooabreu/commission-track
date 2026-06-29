@@ -36,6 +36,14 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ARTIST)
+  @Get('clients')
+  findClients(@Req() req: Request) {
+    const user = req.user as { id: string };
+    return this.usersService.findArtistClients(user.id);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Req() req: Request, @Param('id') id: string) {
