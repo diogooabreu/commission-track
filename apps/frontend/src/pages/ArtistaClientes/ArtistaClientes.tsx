@@ -9,18 +9,18 @@ export function ArtistaClientes() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    api.get<User[]>('/users')
+    api.get<User[]>('/users/clients')
       .then(({ data }) => setUsers(data))
-      .catch(() => setApiError('Erro ao carregar usuários. Tente novamente.'))
+      .catch(() => setApiError('Erro ao carregar clientes. Tente novamente.'))
       .finally(() => setIsLoading(false))
   }, [])
 
   function handleRetry() {
     setIsLoading(true)
     setApiError('')
-    api.get<User[]>('/users')
+    api.get<User[]>('/users/clients')
       .then(({ data }) => setUsers(data))
-      .catch(() => setApiError('Erro ao carregar usuários. Tente novamente.'))
+      .catch(() => setApiError('Erro ao carregar clientes. Tente novamente.'))
       .finally(() => setIsLoading(false))
   }
 
@@ -87,7 +87,7 @@ export function ArtistaClientes() {
       {filtered.length === 0 ? (
         <div className="rounded-sm border border-[#e5e4e7] bg-surface p-12 text-center">
           <p className="text-tertiary">
-            {search ? 'Nenhum usuário encontrado para esta busca.' : 'Nenhum usuário cadastrado.'}
+            {search ? 'Nenhum cliente encontrado para esta busca.' : 'Nenhum cliente encontrado.'}
           </p>
         </div>
       ) : (

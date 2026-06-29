@@ -22,13 +22,6 @@ const users: User[] = [
     role: 'CLIENT',
     createdAt: '2024-03-20',
   },
-  {
-    id: '3',
-    name: 'Carlos Artista',
-    email: 'carlos@test.com',
-    role: 'ARTIST',
-    createdAt: '2024-02-10',
-  },
 ]
 
 let mock: MockAdapter
@@ -48,15 +41,15 @@ function renderPage() {
 describe('ArtistaClientes', () => {
   it('shows loading state initially', () => {
     mock = new MockAdapter(api)
-    mock.onGet('/users').reply(() => new Promise(() => {}))
+    mock.onGet('/users/clients').reply(() => new Promise(() => {}))
 
     renderPage()
     expect(screen.getByText(/carregando/i)).toBeInTheDocument()
   })
 
-  it('renders list of users', async () => {
+  it('renders list of clients', async () => {
     mock = new MockAdapter(api)
-    mock.onGet('/users').reply(200, users)
+    mock.onGet('/users/clients').reply(200, users)
 
     renderPage()
 
@@ -64,15 +57,13 @@ describe('ArtistaClientes', () => {
       expect(screen.getByText('Maria Cliente')).toBeInTheDocument()
     })
     expect(screen.getByText('João Cliente')).toBeInTheDocument()
-    expect(screen.getByText('Carlos Artista')).toBeInTheDocument()
     expect(screen.getByText('maria@test.com')).toBeInTheDocument()
-    expect(screen.getAllByText('CLIENT').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('ARTIST')).toBeInTheDocument()
+    expect(screen.getAllByText('CLIENT')).toHaveLength(2)
   })
 
-  it('filters users by search term', async () => {
+  it('filters clients by search term', async () => {
     mock = new MockAdapter(api)
-    mock.onGet('/users').reply(200, users)
+    mock.onGet('/users/clients').reply(200, users)
 
     renderPage()
 
@@ -85,23 +76,22 @@ describe('ArtistaClientes', () => {
 
     expect(screen.getByText('Maria Cliente')).toBeInTheDocument()
     expect(screen.queryByText('João Cliente')).not.toBeInTheDocument()
-    expect(screen.queryByText('Carlos Artista')).not.toBeInTheDocument()
   })
 
-  it('shows empty state when no users', async () => {
+  it('shows empty state when no clients', async () => {
     mock = new MockAdapter(api)
-    mock.onGet('/users').reply(200, [])
+    mock.onGet('/users/clients').reply(200, [])
 
     renderPage()
 
     await waitFor(() => {
-      expect(screen.getByText(/nenhum usuário/i)).toBeInTheDocument()
+      expect(screen.getByText(/nenhum cliente/i)).toBeInTheDocument()
     })
   })
 
   it('shows error message on API failure', async () => {
     mock = new MockAdapter(api)
-    mock.onGet('/users').reply(500)
+    mock.onGet('/users/clients').reply(500)
 
     renderPage()
 
@@ -112,7 +102,7 @@ describe('ArtistaClientes', () => {
 
   it('deletes a user with confirmation', async () => {
     mock = new MockAdapter(api)
-    mock.onGet('/users').reply(200, users)
+    mock.onGet('/users/clients').reply(200, users)
     mock.onDelete('/users/1').reply(200)
 
     const confirmSpy = vi.spyOn(window, 'confirm')

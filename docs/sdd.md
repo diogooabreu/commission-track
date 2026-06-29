@@ -321,6 +321,32 @@ Response:
 
 ---
 
+## GET /users/clients
+
+Retorna apenas os clientes (`CLIENT`) que já criaram ao menos uma comissão com o artista autenticado. Exclui artistas e clientes que nunca comissionaram este artista.
+
+Permissão:
+
+```
+ARTIST
+```
+
+Response:
+
+```json
+[
+  {
+    "id": "uuid",
+    "name": "string",
+    "email": "string",
+    "role": "CLIENT",
+    "createdAt": "datetime"
+  }
+]
+```
+
+---
+
 ## GET /users/:id
 
 Retorna os detalhes de um usuário específico.

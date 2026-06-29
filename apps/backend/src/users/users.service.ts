@@ -31,6 +31,16 @@ export class UsersService {
     return this.prisma.user.findMany({ omit: { password: true } });
   }
 
+  async findArtistClients(artistId: string) {
+    return this.prisma.user.findMany({
+      where: {
+        role: 'CLIENT',
+        commissionsAsClient: { some: { artistId } },
+      },
+      omit: { password: true },
+    });
+  }
+
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }
