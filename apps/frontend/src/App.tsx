@@ -15,6 +15,7 @@ import { ArtistaComissaoDetalhes } from './pages/ArtistaComissaoDetalhes/Artista
 import { ClienteComissoes } from './pages/ClienteComissoes/ClienteComissoes'
 import { ClienteNovaComissao } from './pages/ClienteNovaComissao/ClienteNovaComissao'
 import { ClienteComissaoDetalhes } from './pages/ClienteComissaoDetalhes/ClienteComissaoDetalhes'
+import { Perfil } from './pages/Perfil/Perfil'
 
 function App() {
   return (
@@ -26,6 +27,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+
+            <Route element={<ProtectedRoute allowedRoles={[Role.ARTIST, Role.CLIENT]} />}>
+              <Route path="/perfil" element={<Perfil />} />
+            </Route>
 
             <Route element={<ProtectedRoute allowedRoles={[Role.ARTIST]} />}>
               <Route path="/artista/painel" element={<ArtistaPainel />} />

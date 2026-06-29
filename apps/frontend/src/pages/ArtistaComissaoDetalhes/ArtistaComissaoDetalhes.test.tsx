@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, afterEach } from 'vitest'
 import MockAdapter from 'axios-mock-adapter'
@@ -92,6 +93,74 @@ describe('ArtistaComissaoDetalhes', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/erro/i)).toBeInTheDocument()
+    })
+  })
+
+  it('shows delivery form with fileUrl and notes fields', async () => {
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, commission)
+    mock.onGet('/deliveries/1').reply(200, deliveries)
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText('Retrato Digital')).toBeInTheDocument()
+    })
+
+    expect(screen.getByPlaceholderText(/url do arquivo/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/observações/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /adicionar entrega/i })).toBeInTheDocument()
+  })
+
+  it('creates delivery and updates the list', async () => {
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, commission)
+    mock.onGet('/deliveries/1').reply(200, deliveries)
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText('Retrato Digital')).toBeInTheDocument()
+    })
+
+    const newDelivery: Delivery = {
+      id: 'del-1',
+      fileUrl: 'https://cdn.example.com/art.png',
+      notes: 'Versão final',
+      commissionId: '1',
+      createdAt: '2024-06-01',
+    }
+
+    mock.onPost('/deliveries').reply(201, newDelivery)
+
+    await userEvent.type(screen.getByPlaceholderText(/url do arquivo/i), 'https://cdn.example.com/art.png')
+    await userEvent.type(screen.getByPlaceholderText(/observações/i), 'Versão final')
+    await userEvent.click(screen.getByRole('button', { name: /adicionar entrega/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Versão final')).toBeInTheDocument()
+    })
+    expect(screen.getByText(/ver arquivo/i)).toBeInTheDocument()
+  })
+
+  it('shows error when delivery creation fails', async () => {
+    mock = new MockAdapter(api)
+    mock.onGet('/commissions/1').reply(200, commission)
+    mock.onGet('/deliveries/1').reply(200, deliveries)
+
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText('Retrato Digital')).toBeInTheDocument()
+    })
+
+    mock.onPost('/deliveries').reply(500)
+
+    await userEvent.type(screen.getByPlaceholderText(/url do arquivo/i), 'https://cdn.example.com/art.png')
+    await userEvent.click(screen.getByRole('button', { name: /adicionar entrega/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/erro ao adicionar entrega/i)).toBeInTheDocument()
     })
   })
 })
