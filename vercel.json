@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build -w apps/frontend",
+  "buildCommand": "npm --prefix apps/frontend run build",
   "outputDirectory": "apps/frontend/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://commission-track-api.onrender.com/api/$1" },
