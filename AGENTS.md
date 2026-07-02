@@ -27,35 +27,22 @@
 ---
 ## Sessão
 
-**Branch atual:** `feature/accept-refuse-commission`
-**Últimos PRs:** #44, #45 (abertos, aguardando merge) | #40–#43 (merged em `develop`) | #46 (acabado de criar)
+**Branch atual:** `feat/deploy-prep`
+**Últimos PRs:** #40–#47 (merged em `develop`), #48 (merged), #49 (aberto develop→main), #50 (aberto)
 
-### Done — Tudo merged em `develop` (PRs #40–#43):
-- Auth flow (auto-login after register, unwrap interceptor, password toggle) (#40)
-- Landing, NotFound, Unauthorized (#41)
-- Artist Dashboard com summary cards / status update (#42)
-- Phase 1 — client flow, commission detail, artist detail (#43)
+### Done — Merged em `develop`:
+- Auth flow, public pages, artist dashboard, client flow (PRs #40–#43)
+- ArtistaClientes + ClienteNovaComissao (PR #44)
+- Delivery form + Perfil + CI workflow (PR #45)
+- Accept/refuse buttons + status banners (PR #46)
+- `GET /users/clients` — filtrar clientes por commissions (PR #47)
+- `tsconfig.app.json` — excluídos test files do `tsc -b` (PR #48)
+- `vercel.json` v1 — rootDirectory + SPA fallback (PR #48)
 
-### Done — Em PRs abertos (#44, #45):
-- `ArtistaClientes` — listagem de clientes com busca (#44)
-- `ClienteNovaComissao` — formulário de criação (#44)
-- `ArtistaComissaoDetalhes` — formulário de entrega + listagem (#45)
-- `Perfil` — página de perfil do usuário (#45)
-- Header atualizado com link `/perfil` (#45)
-- CI workflow (lint + test) (#45)
-
-### Done — Neste PR (#46):
-- Accept/refuse buttons no lugar do select de status (PENDING)
-- Contextual status banners no cliente
-- 110 frontend + 74 backend = 184 testes verdes
+### Neste PR (#50):
+- `vercel.json` — corrigido: remove `rootDirectory`, `buildCommand` com `-w apps/frontend`
 
 ### Próximos (ID17):
 - Deploy: Render (backend) + Vercel (frontend)
 - Banco já em Neon nuvem
-
-### Decisões
-- **Commission flow:** Client cria → Artist aceita/recusa explicitamente (botões) → IN_PROGRESS / CANCELLED
-- **PENDING:** artista vê botões, não select. Após ação, select sem PENDING
-- **Pagamento:** fora da plataforma (nenhuma integração)
-- **Trocar senha:** ghost button no Perfil (placeholder)
-- **Deploy:** Render API + Vercel UI
+- Build frontend: OK
