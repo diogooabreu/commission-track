@@ -1,7 +1,6 @@
 {
-  "rootDirectory": "apps/frontend",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build -w apps/frontend",
+  "outputDirectory": "apps/frontend/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://commission-track-api.onrender.com/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
