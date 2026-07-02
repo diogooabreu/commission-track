@@ -298,7 +298,32 @@ Response:
 
 ## GET /users
 
-Lista usuários (clientes) cadastrados no sistema. Necessário para que o artista encontre o `clientId` ao criar uma nova comissão.
+Lista todos os usuários cadastrados no sistema. Necessário para que o artista encontre o `id` de um usuário ao criar uma nova comissão. Retorna tanto artistas quanto clientes, permitindo que um artista comissione outro artista.
+
+Permissão:
+
+```
+Authenticated
+```
+
+Response:
+
+```json
+[
+  {
+    "id": "uuid",
+    "name": "string",
+    "email": "string",
+    "role": "ARTIST | CLIENT"
+  }
+]
+```
+
+---
+
+## GET /users/clients
+
+Retorna apenas os clientes (`CLIENT`) que já criaram ao menos uma comissão com o artista autenticado. Exclui artistas e clientes que nunca comissionaram este artista.
 
 Permissão:
 
@@ -314,7 +339,8 @@ Response:
     "id": "uuid",
     "name": "string",
     "email": "string",
-    "role": "CLIENT"
+    "role": "CLIENT",
+    "createdAt": "datetime"
   }
 ]
 ```

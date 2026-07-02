@@ -40,12 +40,12 @@ describe('AuthService', () => {
   afterEach(() => jest.clearAllMocks());
 
   describe('login', () => {
-    const dto = { email: 'john@test.com', password: 'Str0ng!' };
+    const dto = { email: '  John@Example.com  ', password: 'Str0ng!' };
 
     it('should return an access token when credentials are valid', async () => {
       const user = {
         id: 'uuid-1',
-        email: dto.email,
+        email: 'john@example.com',
         password: 'hashed-password',
         role: Role.ARTIST,
       };
@@ -54,7 +54,9 @@ describe('AuthService', () => {
 
       const result = await service.login(dto);
 
-      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(dto.email);
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(
+        'john@example.com',
+      );
       expect(bcrypt.compare).toHaveBeenCalledWith(dto.password, user.password);
       expect(mockJwtService.signAsync).toHaveBeenCalledWith({
         sub: user.id,
@@ -73,7 +75,7 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException when password is invalid', async () => {
       mockUsersService.findByEmail.mockResolvedValue({
         id: 'uuid-1',
-        email: dto.email,
+        email: 'john@example.com',
         password: 'hashed-password',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
@@ -127,7 +129,7 @@ describe('AuthService', () => {
 
     it('should throw ConflictException when email already exists', async () => {
       mockUsersService.create.mockRejectedValue(
-        new ConflictException('Email already exists'),
+        new ConflictException('Registration failed'),
       );
 
       await expect(service.register(dto)).rejects.toThrow(ConflictException);

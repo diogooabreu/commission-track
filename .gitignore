@@ -24,6 +24,10 @@ yarn-error.log*
 .env.local
 .agents
 
+# Stitch design credentials (local-only, never commit)
+.mcp.json
+.stitch.env
+
 # temp directory
 .temp
 .tmp

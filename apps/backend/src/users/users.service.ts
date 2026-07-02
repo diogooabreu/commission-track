@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -16,17 +17,28 @@ export class UsersService {
     role: 'ARTIST' | 'CLIENT';
   }) {
     try {
+      dto.email = dto.email.toLowerCase().trim();
       return await this.prisma.user.create({ data: dto });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
-        throw new ConflictException('Email already exists');
+        throw new ConflictException('Email já cadastrado');
       }
       throw error;
     }
   }
 
   async findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({ omit: { password: true } });
+  }
+
+  async findArtistClients(artistId: string) {
+    return this.prisma.user.findMany({
+      where: {
+        role: 'CLIENT',
+        commissionsAsClient: { some: { artistId } },
+      },
+      omit: { password: true },
+    });
   }
 
   async findByEmail(email: string) {
@@ -34,7 +46,10 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      omit: { password: true },
+    });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -49,11 +64,21 @@ export class UsersService {
     }>,
   ) {
     await this.findOne(id);
+    if (dto.email) {
+      dto.email = dto.email.toLowerCase().trim();
+    }
+    if (dto.password) {
+      dto.password = await bcrypt.hash(dto.password, 10);
+    }
     try {
-      return await this.prisma.user.update({ where: { id }, data: dto });
+      return await this.prisma.user.update({
+        where: { id },
+        data: dto,
+        omit: { password: true },
+      });
     } catch (error) {
       if ((error as { code?: string })?.code === 'P2002') {
-        throw new ConflictException('Email already exists');
+        throw new ConflictException('Update failed');
       }
       throw error;
     }
@@ -61,6 +86,9 @@ export class UsersService {
 
   async remove(id: string) {
     await this.findOne(id);
-    await this.prisma.user.delete({ where: { id } });
+    return await this.prisma.user.delete({
+      where: { id },
+      omit: { password: true },
+    });
   }
 }

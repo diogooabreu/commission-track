@@ -7,14 +7,17 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { DeliveriesService } from './deliveries.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/dto/create-user.dto';
-import { Request } from 'express';
+import type { Request } from 'express';
 
+@ApiTags('Deliveries')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('deliveries')
 export class DeliveriesController {
@@ -23,8 +26,9 @@ export class DeliveriesController {
   @UseGuards(RolesGuard)
   @Roles(Role.ARTIST)
   @Post()
-  create(@Body() dto: CreateDeliveryDto) {
-    return this.deliveriesService.create(dto);
+  create(@Req() req: Request, @Body() dto: CreateDeliveryDto) {
+    const user = req.user as { id: string };
+    return this.deliveriesService.create(dto, user.id);
   }
 
   @Get(':commissionId')

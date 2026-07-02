@@ -130,7 +130,7 @@ Blindagem de entrada da API.
 Checklist:
 
 * [x] CreateUserDTO
-* [ ] LoginDTO (pendente — aguarda ID8)
+* [x] LoginDTO
 * [x] CreateCommissionDTO
 * [x] UpdateCommissionDTO
 * [x] ValidationPipe global ativo
@@ -174,11 +174,11 @@ Controle de acesso seguro.
 
 Checklist:
 
-* [ ] Endpoint register
-* [ ] Endpoint login
-* [ ] JWT funcionando
-* [ ] RoleGuard implementado
-* [ ] Ownership validation implementada
+* [x] Endpoint register
+* [x] Endpoint login
+* [x] JWT funcionando
+* [x] RoleGuard implementado
+* [x] Ownership validation implementada
 
 Evidência:
 
@@ -222,7 +222,7 @@ Checklist:
 * [x] Testes criados antes da lógica
 * [x] Testes Services
 * [x] Testes Controllers
-* [ ] Testes Auth (pendente — aguarda ID8)
+* [x] Testes Auth
 
 Evidência:
 
@@ -243,7 +243,7 @@ Checklist:
 * [x] `npm run test` executa corretamente
 * [x] Cobertura de sucesso
 * [x] Cobertura de erro
-* [ ] Pipeline executa testes automaticamente (opcional nesta fase)
+* [x] Pipeline executa testes automaticamente
 
 Evidência:
 
@@ -263,11 +263,11 @@ Documentação interativa da API.
 
 Checklist:
 
-* [ ] Swagger configurado
-* [ ] Endpoints auth documentados
-* [ ] Endpoints users documentados
-* [ ] Endpoints commissions documentados
-* [ ] Endpoints deliveries documentados
+* [x] Swagger configurado
+* [x] Endpoints auth documentados
+* [x] Endpoints users documentados
+* [x] Endpoints commissions documentados
+* [x] Endpoints deliveries documentados
 
 Evidência:
 
@@ -285,10 +285,14 @@ Materializar requisitos em UI.
 
 Checklist:
 
-* [ ] Tela login
-* [ ] Tela dashboard
-* [ ] Tela commissions
-* [ ] Tela deliveries
+* [x] Tela login + cadastro
+* [x] Tela landing page, 404, unauthorized
+* [x] Tela dashboard (painel artista)
+* [x] Tela gerenciar clientes (artista)
+* [x] Tela detalhes comissão (artista)
+* [x] Tela minhas comissões (cliente)
+* [x] Tela nova comissão (cliente)
+* [x] Tela detalhes comissão (cliente)
 
 Evidência:
 
@@ -306,10 +310,10 @@ Consumir dados autenticados via JWT.
 
 Checklist:
 
-* [ ] Integração login
-* [ ] Token armazenado corretamente
-* [ ] Requests autenticados
-* [ ] Proteção de rotas frontend
+* [x] Integração login + cadastro
+* [x] Token armazenado corretamente (localStorage)
+* [x] Requests autenticados (JWT interceptor)
+* [x] Proteção de rotas frontend (ProtectedRoute + role check)
 
 Evidência:
 
@@ -329,10 +333,10 @@ Proteção de credenciais sensíveis.
 
 Checklist:
 
-* [ ] `.env` ignorado no git
-* [ ] DATABASE_URL protegida
-* [ ] JWT_SECRET protegido
-* [ ] ConfigModule configurado
+* [x] `.env` ignorado no git
+* [x] DATABASE_URL protegida
+* [x] JWT_SECRET protegido
+* [x] ConfigModule configurado
 
 Evidência:
 
@@ -350,10 +354,10 @@ Validação automática antes de merge.
 
 Checklist:
 
-* [ ] Workflow criado
-* [ ] Lint executado
-* [ ] Testes executados
-* [ ] Pipeline bloqueia erro
+* [x] Workflow criado
+* [x] Lint executado
+* [x] Testes executados
+* [x] Pipeline bloqueia erro
 
 Evidência:
 
