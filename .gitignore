@@ -34,6 +34,10 @@ yarn-error.log*
 
 # build output
 dist/
+*.tsbuildinfo
+prisma.config.d.ts
+prisma.config.js
+prisma.config.js.map
 
 # node_modules
 apps/backend/node_modules
